@@ -19,7 +19,37 @@ const treeChartData = {
       },
       {
         id: 3,
-        content: { title: "as222dfdsfddddddddddd22d1as222dfdsfddddddddddd22d1", data: ["date"] }
+        content: {
+          title: "as222dfdsfddddddddddd22d1as222dfdsfddddddddddd22d1",
+          data: ["date"]
+        },
+        children: [
+          {
+            id: 5,
+            content: { title: "123", data: ["date"] }
+          },
+          {
+            id: 6,
+            content: {
+              title: "as222dfdsfddddddddddd22d1as222dfdsfddddddddddd22d1",
+              data: ["date"]
+            }
+          },
+          {
+            id: 7,
+            content: {
+              title: "as222dfdsfddddddddddd22d1as222dfdsfddddddddddd22d1",
+              data: ["date"]
+            }
+          }
+        ]
+      },
+      {
+        id: 4,
+        content: {
+          title: "as222dfdsfddddddddddd22d1as222dfdsfddddddddddd22d1",
+          data: ["date"]
+        }
       }
     ]
   }
@@ -27,12 +57,29 @@ const treeChartData = {
 
 const chartConfig = {
   chart: {
-    type: "tree"
-    // width: 300,
-    // height: 200,
+    type: "tree",
+    config: {
+      node: {
+        padding: {
+          x: 10,
+          y: 10
+        },
+        content: {
+          align: "center"
+        }
+      },
+      row: {
+        line: 1
+      },
+      legend: {
+        enabled: false
+      }
+    },
+    width: 0,
+    height: 0
   },
   series: [{ data: [treeChartData] }],
-  title: { text: "title" },
+  title: { text: "" },
   credits: { enabled: false },
   exporting: { enabled: true },
   colors: ["#74D0C5", "#F2AC54", "#ECD868"]
