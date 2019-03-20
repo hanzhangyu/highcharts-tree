@@ -1,0 +1,27 @@
+{
+  "extends": ["tslint:recommended"],
+  "rules": {
+    "arrow-parens": false,
+    "interface-name": false,
+    "max-line-length": [true, 100],
+    "no-console": [true, "time", "timeEnd", "trace"],
+    "no-string-literal": false,
+    "object-literal-sort-keys": false,
+    "ordered-imports": false,
+    "trailing-comma": [
+      false,
+      {
+        "multiline": "always",
+        "singleline": "never"
+      }
+    ],
+    "variable-name": [
+      true,
+      "allow-leading-underscore",
+      "ban-keywords",
+      "allow-pascal-case",
+      "check-format"
+    ],
+    "curly": [true, "ignore-same-line"]
+  }
+}

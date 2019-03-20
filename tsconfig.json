@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es5",
+    "sourceMap": true,
+    "downlevelIteration": true,
+    "esModuleInterop": true,
+    "strictNullChecks": false,
+    "strict": true,
+    "noUnusedParameters": true,
+    "noUnusedLocals": true,
+    "noImplicitAny": true,
+    "outDir": "lib",
+    "lib": ["dom", "es6"],
+    "typeRoots": ["node_modules/@types", "./src"]
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "lib", "test", "example"]
+}
