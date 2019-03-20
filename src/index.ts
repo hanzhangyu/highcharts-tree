@@ -22,10 +22,10 @@ export default (Highcharts: any) => {
       },
       padding: {
         x: 0,
-        y: 0,
+        y: 0
       },
       content: {
-        align: "center"
+        align: "left"
       }
     },
     row: {
@@ -33,7 +33,8 @@ export default (Highcharts: any) => {
       line: 2
     },
     tooltip: {
-      backgroundColor: "rgba(0,0,0,0.1)"
+      backgroundColor: "rgba(0,0,0,0.6)",
+      textColor: "#fff"
     },
     connector: {
       color: "#bcbcbc",
@@ -90,8 +91,8 @@ export default (Highcharts: any) => {
             y: node.y * (config.node.height + config.node.marginY),
             // w: config.node.width,
             // h: config.node.height
-            w: config.node.width - config.node.padding.x,
-            h: config.node.height - config.node.padding.y
+            w: config.node.width,
+            h: config.node.height
           };
 
           // title, needs to be added to getBBox()
@@ -99,8 +100,8 @@ export default (Highcharts: any) => {
           const titleElement = ren
             .label(
               node.item.content.title,
-              box.x,
-              box.y + config.node.title.marginY,
+              box.x + config.node.padding.x,
+              box.y + config.node.title.marginY + config.node.padding.y,
               "rect"
             )
             .css({
@@ -108,7 +109,7 @@ export default (Highcharts: any) => {
               fontSize: "14px",
               color: config.textColor,
               fontWeight: "bold",
-              width: box.w - NODE_WIDTH_OFFSET,
+              width: box.w - NODE_WIDTH_OFFSET - config.node.padding.x * 2,
               textOverflow: "ellipsis",
               textAlign: "center"
             })
@@ -129,7 +130,7 @@ export default (Highcharts: any) => {
               elements.push(
                 ren
                   .rect(
-                    box.x,
+                    box.x + config.node.padding.x,
                     box.y + rowsY + config.row.height * i,
                     config.legend.nodeWidth,
                     config.row.height
@@ -142,13 +143,16 @@ export default (Highcharts: any) => {
             const text = formatRowValue(node.item.content.data[i]);
             const textAlign = config.node.content.align;
             const textElementWidth =
-              box.w - offsetTextByLegend - NODE_WIDTH_OFFSET;
+              box.w -
+              offsetTextByLegend -
+              NODE_WIDTH_OFFSET -
+              config.node.padding.x * 2;
             const computedWidth =
               textAlign === "center" ? undefined : textElementWidth;
             const textElement = ren
               .label(
                 text,
-                box.x + offsetTextByLegend,
+                box.x + offsetTextByLegend + config.node.padding.x,
                 box.y + rowsY + config.row.height * i,
                 "rect"
               )
@@ -182,7 +186,9 @@ export default (Highcharts: any) => {
             config.node.height < 1
           ) {
             config.node.height = box.h =
-              rowsY + config.row.line * config.row.height;
+              rowsY +
+              config.row.line * config.row.height +
+              config.node.padding.y * 2;
           }
           if (node === this._tree.root) {
             const minChartWidth =
@@ -215,7 +221,9 @@ export default (Highcharts: any) => {
           // console.log(box.x);
           const tooltipElement = ren
             .label(
-              `${node.item.content.title}<br>${123}`,
+              `${node.item.content.title}<br>${node.item.content.data.join(
+                "<br>"
+              )}`,
               box.x + box.w,
               box.y,
               "callout",
@@ -225,7 +233,7 @@ export default (Highcharts: any) => {
             )
             .css({
               fontSize: "13px",
-              color: config.textColor,
+              color: config.tooltip.textColor,
               whiteSpace: "normal",
               pointerEvents: "none"
             })
@@ -287,7 +295,7 @@ export default (Highcharts: any) => {
                 ])
                 .attr({
                   "stroke-width": config.connector.width,
-                  stroke: config.connector.color
+                  "stroke": config.connector.color
                 })
             );
           }
@@ -311,7 +319,7 @@ export default (Highcharts: any) => {
                   ])
                   .attr({
                     "stroke-width": config.connector.width,
-                    stroke: config.connector.color
+                    "stroke": config.connector.color
                   })
               );
 
@@ -335,7 +343,7 @@ export default (Highcharts: any) => {
                     ])
                     .attr({
                       "stroke-width": config.connector.width,
-                      stroke: config.connector.color
+                      "stroke": config.connector.color
                     })
                 );
               }
