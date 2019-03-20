@@ -19,6 +19,13 @@ export default (Highcharts: any) => {
       backgroundColorToggle: "#cccccc",
       title: {
         marginY: 4
+      },
+      padding: {
+        x: 0,
+        y: 0,
+      },
+      content: {
+        align: "center"
       }
     },
     row: {
@@ -61,8 +68,8 @@ export default (Highcharts: any) => {
         console.log("translate");
         this._config = merge(
           {},
-          this.chart.userOptions.chart.config,
-          this.options.config
+          this.options.config,
+          this.chart.userOptions.chart.config
         );
         const data = this.options.data[0];
         const ren = this.chart.renderer;
@@ -81,8 +88,10 @@ export default (Highcharts: any) => {
           const box = {
             x: node.x * (config.node.width + config.node.marginX),
             y: node.y * (config.node.height + config.node.marginY),
-            w: config.node.width,
-            h: config.node.height
+            // w: config.node.width,
+            // h: config.node.height
+            w: config.node.width - config.node.padding.x,
+            h: config.node.height - config.node.padding.y
           };
 
           // title, needs to be added to getBBox()
@@ -131,6 +140,11 @@ export default (Highcharts: any) => {
             }
 
             const text = formatRowValue(node.item.content.data[i]);
+            const textAlign = config.node.content.align;
+            const textElementWidth =
+              box.w - offsetTextByLegend - NODE_WIDTH_OFFSET;
+            const computedWidth =
+              textAlign === "center" ? undefined : textElementWidth;
             const textElement = ren
               .label(
                 text,
@@ -141,18 +155,23 @@ export default (Highcharts: any) => {
               .css({
                 fontSize: "13px",
                 color: config.textColor,
-                width: box.w - offsetTextByLegend - NODE_WIDTH_OFFSET,
+                width: computedWidth,
                 textOverflow: "ellipsis",
                 pointerEvents: "none"
               })
               .attr({
                 zIndex: 1,
-                width: box.w - offsetTextByLegend - NODE_WIDTH_OFFSET
+                width: computedWidth
               })
               .add();
 
             // - allign right
             // textElement.attr({x: box.x + box.w - textElement.width - config.row.marginX});
+            if (textAlign === "center") {
+              textElement.attr({
+                x: box.x + box.w / 2 - textElement.width / 2
+              });
+            }
             elements.push(textElement);
           }
 
@@ -214,7 +233,7 @@ export default (Highcharts: any) => {
               zIndex: 1,
               fill: config.tooltip.backgroundColor,
               height: box.h - NODE_WIDTH_OFFSET,
-              opacity: 0,
+              opacity: 0
             })
             .add();
           elements.push(tooltipElement);
