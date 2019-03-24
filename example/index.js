@@ -1,6 +1,8 @@
 import Highcharts from "highcharts";
+import HighchartsExport from "highcharts/modules/exporting.js";
 import HighchartsTree from "../lib/index";
 
+HighchartsExport(Highcharts);
 HighchartsTree(Highcharts);
 
 const treeChartData = {
@@ -32,7 +34,7 @@ const treeChartData = {
             id: 6,
             content: {
               title: "as222dfdsfddddddddddd22d1as222dfdsfddddddddddd22d1",
-              data: ["date"]
+              data: ["date", "date"]
             }
           },
           {
@@ -60,40 +62,70 @@ const chartConfig = {
     type: "tree",
     config: {
       node: {
+        width: 200,
+        height: 0, // null || 0 = auto-calculated
+        marginX: 20,
+        marginY: 20,
+        backgroundColor: "#f2f2f2",
+        backgroundColorToggle: "#cccccc",
+        title: {
+          marginY: 4
+        },
         padding: {
-          x: 10,
-          y: 10
+          x: 0,
+          y: 0
         },
         content: {
-          align: "center"
+          align: "left"
         }
       },
       row: {
-        line: 1
+        height: 20,
+        line: 2
+      },
+      tooltip: {
+        enabled: true,
+        backgroundColor: "rgba(0,0,0,0.6)",
+        borderRadius: 3,
+        textColor: "#fff",
+        tooltipFormatter(item) {
+          return `<h3>${item.content.title}</h3>${item.content.data.join("<br>")}`;
+        }
+      },
+      connector: {
+        color: "#bcbcbc",
+        width: 4
       },
       legend: {
-        enabled: false
-      }
+        enabled: true,
+        nodeWidth: 20,
+        marginX: 10,
+        marginY: 25
+      },
+      textColor: "#454d59",
+      currencySymbol: "$",
+      currencySymbolOnLeft: true
     },
-    width: 0,
-    height: 0
+    width: 1,
+    height: 1
   },
   series: [{ data: [treeChartData] }],
-  title: { text: "" },
-  credits: { enabled: false },
+  title: { text: "Title", margin: 10 },
+  // title: false,
+  credits: { enabled: true },
   exporting: { enabled: true },
-  colors: ["#74D0C5", "#F2AC54", "#ECD868"]
+  // colors: ["#74D0C5", "#F2AC54", "#ECD868"]
 };
 window.Highcharts = Highcharts;
 console.log(Highcharts);
 document.addEventListener("DOMContentLoaded", () => {
-  let chart = Highcharts.chart("tree", chartConfig);
+  window.chart = Highcharts.chart("tree", chartConfig);
 
   document.querySelector("#btnRefresh").addEventListener("click", () => {
     // treeChartData.tree.forEach(function (item) {
     //     item.content.data[0] = new Date();
     // });
     // chartConfig.series[0].data[0] = treeChartData;
-    chart = Highcharts.chart("tree", chartConfig);
+    window.chart = Highcharts.chart("tree", chartConfig);
   });
 });

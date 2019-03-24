@@ -7,6 +7,9 @@
 
 interface TreeDataNode {
     id: number;
-    content: any;
+    content: {
+        title: string | number,
+        data: Array<string|number>,
+    };
     children?: TreeDataNode[];
 }

@@ -5,10 +5,11 @@ interface ElementObjectExtended extends Highcharts.ElementObject {
   added: boolean;
 }
 
+const SHAPE_OFFSET = 3;
+const NODE_WIDTH_OFFSET = SHAPE_OFFSET * 2;
+
 // @types/highcharts not support some method
 export default (Highcharts: any) => {
-  const NODE_WIDTH_OFFSET = 6;
-
   const defaultConfig = {
     node: {
       width: 200,
@@ -33,8 +34,14 @@ export default (Highcharts: any) => {
       line: 2
     },
     tooltip: {
+      enabled: false,
       backgroundColor: "rgba(0,0,0,0.6)",
-      textColor: "#fff"
+      borderRadius: 3,
+      textColor: "#fff",
+      width: 0, // set 0 to use node width
+      tooltipFormatter(item: TreeDataNode) {
+        return `${item.content.title}<br>${item.content.data.join("<br>")}`;
+      }
     },
     connector: {
       color: "#bcbcbc",
@@ -82,18 +89,19 @@ export default (Highcharts: any) => {
 
         if (!elements) this._elements = elements = [];
         const drawNode = (node: TreeNode<TreeDataNode>) => {
-          const formatRowValue = (value: string) => {
+          const formatRowValue = (value: string | number) => {
             return value.toLocaleString();
           };
 
           const box = {
             x: node.x * (config.node.width + config.node.marginX),
-            y: node.y * (config.node.height + config.node.marginY),
-            // w: config.node.width,
-            // h: config.node.height
+            y:
+              node.y * (config.node.height + config.node.marginY) +
+              this._titleOffsetY,
             w: config.node.width,
             h: config.node.height
           };
+          console.log(box, node);
 
           // title, needs to be added to getBBox()
 
@@ -198,7 +206,10 @@ export default (Highcharts: any) => {
             const minChartHeight =
               this._tree.root.height *
                 (config.node.height + config.node.marginY) +
-              config.node.height;
+              config.node.height +
+              config.legend.marginY +
+              config.row.height +
+              this._titleOffsetY;
             const isGrowWidth = this.chart.chartWidth < minChartWidth;
             const isGrowHeight = this.chart.chartHeight < minChartHeight;
             if (isGrowWidth || isGrowHeight) {
@@ -219,32 +230,43 @@ export default (Highcharts: any) => {
 
           // main box
           // console.log(box.x);
-          const tooltipElement = ren
-            .label(
-              `${node.item.content.title}<br>${node.item.content.data.join(
-                "<br>"
-              )}`,
-              box.x + box.w,
-              box.y,
-              "callout",
-              undefined,
-              undefined,
-              true
-            )
-            .css({
-              fontSize: "13px",
-              color: config.tooltip.textColor,
-              whiteSpace: "normal",
-              pointerEvents: "none"
-            })
-            .attr({
-              zIndex: 1,
-              fill: config.tooltip.backgroundColor,
-              height: box.h - NODE_WIDTH_OFFSET,
-              opacity: 0
-            })
-            .add();
-          elements.push(tooltipElement);
+          let tooltipElement: ElementObjectExtended = null;
+          if (config.tooltip.enabled) {
+            let tooltipX = box.x + box.w;
+            const tooltipW = config.tooltip.width || box.w;
+            if (tooltipX + tooltipW > this.chart.chartWidth) {
+              tooltipX = box.x - tooltipW;
+            }
+            tooltipElement = ren
+              .label(
+                `<div style="
+background-color: ${config.tooltip.backgroundColor};
+color: ${config.tooltip.textColor};
+font-size: 12px;
+min-height: ${box.h}px;
+margin-left: -${SHAPE_OFFSET}px;
+margin-top: -${SHAPE_OFFSET}px;
+width: ${tooltipW}px;
+white-space: initial;
+word-break: break-word;
+">${config.tooltip.tooltipFormatter(node.item)}</div>`,
+                tooltipX,
+                box.y,
+                "rect",
+                undefined,
+                undefined,
+                true
+              )
+              .css({
+                pointerEvents: "none"
+              })
+              .attr({
+                zIndex: 5,
+                opacity: 0
+              })
+              .add();
+            elements.push(tooltipElement);
+          }
 
           const boxElement = ren
             .rect(box.x, box.y, box.w, box.h, 3)
@@ -257,20 +279,14 @@ export default (Highcharts: any) => {
               id: node.item.id
             })
             .on("mouseover", () => {
-              tooltipElement.animate(
-                {
-                  opacity: 1
-                },
-                { duration: 300 }
-              );
+              if (tooltipElement) {
+                tooltipElement.animate({ opacity: 1 }, { duration: 300 });
+              }
             })
             .on("mouseout", () => {
-              tooltipElement.animate(
-                {
-                  opacity: 0
-                },
-                { duration: 300 }
-              );
+              if (tooltipElement) {
+                tooltipElement.animate({ opacity: 0 }, { duration: 300 });
+              }
             });
           elements.push(boxElement);
           if (node.children.length > 0) {
@@ -295,7 +311,7 @@ export default (Highcharts: any) => {
                 ])
                 .attr({
                   "stroke-width": config.connector.width,
-                  "stroke": config.connector.color
+                  stroke: config.connector.color
                 })
             );
           }
@@ -319,7 +335,7 @@ export default (Highcharts: any) => {
                   ])
                   .attr({
                     "stroke-width": config.connector.width,
-                    "stroke": config.connector.color
+                    stroke: config.connector.color
                   })
               );
 
@@ -343,7 +359,7 @@ export default (Highcharts: any) => {
                     ])
                     .attr({
                       "stroke-width": config.connector.width,
-                      "stroke": config.connector.color
+                      stroke: config.connector.color
                     })
                 );
               }
@@ -380,8 +396,16 @@ export default (Highcharts: any) => {
             })
           );
         } else {
+          this._titleOffsetY = 0;
+          if (this.chart.title) {
+            const titleBox = this.chart.title.getBBox();
+            this._titleOffsetY =
+              titleBox.y + titleBox.height + this.chart.options.title.margin;
+          }
           // draw tree
-          if (!drawNode(this._tree.root)) return;
+          if (!drawNode(this._tree.root)) {
+            return;
+          }
 
           // draw legend
           if (config.legend.enabled) {
