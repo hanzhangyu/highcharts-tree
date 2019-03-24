@@ -44,7 +44,9 @@ test(`${NAMESPACE}test for node move`, t => {
     t.is(node.y, node.item.result.y);
     t.is(node.width, node.item.result.width);
     if (node.children) {
-      node.children.forEach((child: TreeNode<TreeDataNodeWithResult>) => loop(child));
+      node.children.forEach((child: TreeNode<TreeDataNodeWithResult>) =>
+        loop(child)
+      );
     }
   };
   loop(t.context.tree.root);
@@ -54,7 +56,10 @@ test(`${NAMESPACE}test for toggle`, t => {
   const treeNode7 = t.context.treeNode7;
   treeNode7.toggle = false; // close id: 7
   t.context.tree.build();
-  treeNode7.x = treeNode7.item.result.x - 0.5;
-  treeNode7.parent.x = treeNode7.parent.item.result.x - 0.25;
-  treeNode7.parent.parent.x = treeNode7.parent.parent.item.result.x - 0.125;
+  t.is(treeNode7.x, treeNode7.item.result.x - 0.5);
+  t.is(treeNode7.parent.x, treeNode7.parent.item.result.x - 0.25);
+  t.is(
+    treeNode7.parent.parent.x,
+    treeNode7.parent.parent.item.result.x - 0.125
+  );
 });
