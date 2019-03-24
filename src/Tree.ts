@@ -139,11 +139,13 @@ export default class Tree<T extends TreeDataNode> {
   }
 
   private calculateInitialX(node: TreeNode<T>) {
-    for (const child of node.children) {
-      this.calculateInitialX(child);
+    if (node.toggle) {
+      for (const child of node.children) {
+        this.calculateInitialX(child);
+      }
     }
 
-    if (node.isLeaf()) {
+    if (node.isLeaf() || !node.toggle) {
       // if there is a previous sibling in this set, set X to previous sibling + designated distance
       if (!node.isLeftMost()) {
         node.x =
@@ -182,19 +184,23 @@ export default class Tree<T extends TreeDataNode> {
     node.x += modSum;
     if (node.x < 0 && node.x * -1 > this.treeMod) this.treeMod = node.x * -1;
     modSum += node.mod;
-    for (const child of node.children) {
-      this.calculateXWithMod(child, modSum);
+    if (node.toggle) {
+      for (const child of node.children) {
+        this.calculateXWithMod(child, modSum);
+      }
     }
   }
 
   private calculateFinalPositions(node: TreeNode<T>) {
     node.x += this.treeMod;
 
-    for (const child of node.children) {
-      this.calculateFinalPositions(child);
+    if (node.toggle) {
+      for (const child of node.children) {
+        this.calculateFinalPositions(child);
+      }
     }
 
-    if (node.isLeaf()) {
+    if (node.isLeaf() || !node.toggle) {
       node.width = node.x;
       node.height = node.y;
     } else {

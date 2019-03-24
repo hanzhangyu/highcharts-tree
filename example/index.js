@@ -1,6 +1,7 @@
 import Highcharts from "highcharts";
 import HighchartsExport from "highcharts/modules/exporting.js";
 import HighchartsTree from "../lib/index";
+import treeData from "./data";
 
 HighchartsExport(Highcharts);
 HighchartsTree(Highcharts);
@@ -11,50 +12,7 @@ const treeChartData = {
     { text: "Legend 2" },
     { text: "Legend 3", type: "percentage" }
   ],
-  tree: {
-    id: 1,
-    content: { title: "as222dfdsfddddddddddd22d1", data: ["date", "text"] },
-    children: [
-      {
-        id: 2,
-        content: { title: "123", data: ["date"] }
-      },
-      {
-        id: 3,
-        content: {
-          title: "as222dfdsfddddddddddd22d1as222dfdsfddddddddddd22d1",
-          data: ["date"]
-        },
-        children: [
-          {
-            id: 5,
-            content: { title: "123", data: ["date"] }
-          },
-          {
-            id: 6,
-            content: {
-              title: "as222dfdsfddddddddddd22d1as222dfdsfddddddddddd22d1",
-              data: ["date", "date"]
-            }
-          },
-          {
-            id: 7,
-            content: {
-              title: "as222dfdsfddddddddddd22d1as222dfdsfddddddddddd22d1",
-              data: ["date"]
-            }
-          }
-        ]
-      },
-      {
-        id: 4,
-        content: {
-          title: "as222dfdsfddddddddddd22d1as222dfdsfddddddddddd22d1",
-          data: ["date"]
-        }
-      }
-    ]
-  }
+  tree: treeData
 };
 
 const chartConfig = {
@@ -116,8 +74,6 @@ const chartConfig = {
   exporting: { enabled: true },
   // colors: ["#74D0C5", "#F2AC54", "#ECD868"]
 };
-window.Highcharts = Highcharts;
-console.log(Highcharts);
 document.addEventListener("DOMContentLoaded", () => {
   window.chart = Highcharts.chart("tree", chartConfig);
 

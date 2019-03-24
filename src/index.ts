@@ -68,12 +68,10 @@ export default (Highcharts: any) => {
     },
     {
       init() {
-        console.log("init");
         seriesTypes.pie.prototype.init.apply(this, arguments);
         this._tree = Tree.getTree(this._tree, this.options.data[0].tree);
       },
       translate() {
-        console.log("translate");
         this._config = merge(
           {},
           this.options.config,
@@ -101,7 +99,6 @@ export default (Highcharts: any) => {
             w: config.node.width,
             h: config.node.height
           };
-          console.log(box, node);
 
           // title, needs to be added to getBBox()
 

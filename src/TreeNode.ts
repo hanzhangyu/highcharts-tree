@@ -18,7 +18,7 @@ export default class TreeNode<T extends TreeDataNode> {
   }
 
   public isLeaf(): boolean {
-    return this.children.length < 1;
+    return !this.children || this.children.length < 1;
   }
 
   public isLeftMost(): boolean {
@@ -53,28 +53,12 @@ export default class TreeNode<T extends TreeDataNode> {
   }
 
   public getLeftMostChild(): TreeNode<T> {
-    return this.children.length < 1 ? null : this.children[0];
+    return this.children && this.children.length > 0 ? this.children[0] : null;
   }
 
   public getRightMostChild(): TreeNode<T> {
-    return this.children.length < 1
-      ? null
-      : this.children[this.children.length - 1];
-  }
-
-  public toString(): string {
-    return (
-      this.item.id +
-      ": " +
-      this.x +
-      ";" +
-      this.y +
-      " | " +
-      this.mod +
-      " | " +
-      this.width +
-      " x " +
-      this.height
-    );
+    return this.children && this.children.length > 0
+      ? this.children[this.children.length - 1]
+      : null;
   }
 }
