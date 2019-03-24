@@ -10,7 +10,8 @@
     "lint": "tslint --project \"./tsconfig.json\"",
     "report": "nyc report --reporter=html",
     "ut": "tsc && nyc ava --verbose --color",
-    "test": "npm run lint && npm run ut"
+    "test": "npm run lint && npm run ut",
+    "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
   "keywords": [
     "highcharts",
