@@ -41,6 +41,10 @@ export default (Highcharts: any) => {
       border: {
         width: 3,
         color: "#919191"
+      },
+      // @ts-ignore: Unused parameter index
+      dataFormatter(date: string | number, index: number) {
+        return date.toLocaleString();
       }
     },
     row: {
@@ -68,8 +72,6 @@ export default (Highcharts: any) => {
       marginY: 25
     },
     textColor: "#454d59",
-    currencySymbol: "$",
-    currencySymbolOnLeft: true
   };
 
   const { seriesType, seriesTypes, each, merge } = Highcharts;
@@ -83,7 +85,7 @@ export default (Highcharts: any) => {
     {
       init() {
         seriesTypes.pie.prototype.init.apply(this, arguments);
-        this._tree = Tree.getTree(this._tree, this.options.data[0].tree);
+        this._tree = Tree.getTree(this._tree, this.options.data.tree);
       },
       translate() {
         this._config = merge(
@@ -91,7 +93,7 @@ export default (Highcharts: any) => {
           this.options.config,
           this.chart.userOptions.chart.config
         );
-        const data = this.options.data[0];
+        const data = this.options.data;
         const ren = this.chart.renderer;
         const config = this._config;
         const colors = this.chart.options.colors;
@@ -101,10 +103,6 @@ export default (Highcharts: any) => {
 
         if (!elements) this._elements = elements = [];
         const drawNode = (node: TreeNode<TreeDataNode>) => {
-          const formatRowValue = (value: string | number) => {
-            return value.toLocaleString();
-          };
-
           const box = {
             x:
               node.x * (config.node.width + config.node.marginX) +
@@ -164,7 +162,7 @@ export default (Highcharts: any) => {
               );
             }
 
-            const text = formatRowValue(node.item.content.data[i]);
+            const text = config.node.dataFormatter(node.item.content.data[i], i);
             const textAlign = config.node.content.align;
             const textElementWidth =
               box.w -

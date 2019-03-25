@@ -31,6 +31,9 @@ const chartConfig = {
         },
         content: {
           align: "left"
+        },
+        dataFormatter(data, index) {
+          return data + index;
         }
       },
       row: {
@@ -57,13 +60,11 @@ const chartConfig = {
         marginY: 25
       },
       textColor: "#454d59",
-      currencySymbol: "$",
-      currencySymbolOnLeft: true
     },
     width: 0, // set 0 to auto size
     height: 0 // set 0 to auto size
   },
-  series: [{ data: [treeChartData] }],
+  series: [{ data: treeChartData }],
   title: { text: "Title", margin: 10 },
   // title: false,
   credits: { enabled: true },
