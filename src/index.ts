@@ -10,7 +10,12 @@ const NODE_WIDTH_OFFSET = SHAPE_OFFSET * 2;
 
 // @types/highcharts not support some method
 export default (Highcharts: any) => {
+  const highchartMajorVersion = Highcharts.version.split(".")[0];
   const defaultConfig = {
+    autoSize: {
+      x: true,
+      y: false,
+    },
     node: {
       width: 200,
       height: 0, // null || 0 = auto-calculated
@@ -19,14 +24,23 @@ export default (Highcharts: any) => {
       backgroundColor: "#f2f2f2",
       backgroundColorToggle: "#cccccc",
       title: {
-        marginY: 4
+        marginTop: 4,
+        marginDown: 4
       },
       padding: {
-        x: 0,
-        y: 0
+        x: 1.5,
+        y: 1.5
       },
       content: {
         align: "left"
+      },
+      hover: {
+        backgroundColor: "#d6d6d6",
+        backgroundColorToggle: "#cccccc"
+      },
+      border: {
+        width: 3,
+        color: "#919191"
       }
     },
     row: {
@@ -92,7 +106,9 @@ export default (Highcharts: any) => {
           };
 
           const box = {
-            x: node.x * (config.node.width + config.node.marginX),
+            x:
+              node.x * (config.node.width + config.node.marginX) +
+              config.node.border.width / 2,
             y:
               node.y * (config.node.height + config.node.marginY) +
               this._titleOffsetY,
@@ -106,7 +122,7 @@ export default (Highcharts: any) => {
             .label(
               node.item.content.title,
               box.x + config.node.padding.x,
-              box.y + config.node.title.marginY + config.node.padding.y,
+              box.y + config.node.padding.y + config.node.title.marginTop,
               "rect"
             )
             .css({
@@ -128,7 +144,10 @@ export default (Highcharts: any) => {
           const offsetTextByLegend = config.legend.enabled
             ? config.legend.nodeWidth
             : 0;
-          const rowsY = titleElement.height + config.node.title.marginY * 2;
+          const rowsY =
+            titleElement.height +
+            config.node.title.marginTop +
+            config.node.title.marginDown;
           for (let i = 0; i < node.item.content.data.length; i++) {
             if (config.legend.enabled) {
               // legend box
@@ -193,35 +212,37 @@ export default (Highcharts: any) => {
             config.node.height = box.h =
               rowsY +
               config.row.line * config.row.height +
-              config.node.padding.y * 2;
+              config.node.padding.y;
           }
           if (node === this._tree.root) {
-            const minChartWidth =
-              this._tree.root.width *
-                (config.node.width + config.node.marginX) +
-              config.node.width;
-            const minChartHeight =
-              this._tree.root.height *
-                (config.node.height + config.node.marginY) +
-              config.node.height +
-              config.legend.marginY +
-              config.row.height +
-              this._titleOffsetY;
-            const isGrowWidth = this.chart.chartWidth < minChartWidth;
-            const isGrowHeight = this.chart.chartHeight < minChartHeight;
-            if (isGrowWidth || isGrowHeight) {
-              if (isGrowWidth) {
-                this.chart.renderTo.style.width = `${minChartWidth}px`;
+            const {width, height} = this.chart.userOptions.chart;
+            if (!width || !height) {
+              let changed = false;
+              const curWidth =
+                  this._tree.root.width *
+                  (config.node.width + config.node.marginX) +
+                  config.node.width +
+                  config.node.border.width;
+              const curHeight =
+                    this._tree.root.height *
+                    (config.node.height + config.node.marginY) +
+                    config.node.height +
+                    config.legend.marginY +
+                    config.row.height +
+                    this._titleOffsetY;
+              if (!width && curWidth !== this.chart.chartWidth) {
+                changed = true;
+                this.chart.renderTo.style.width = `${curWidth}px`;
               }
-              if (isGrowHeight) {
-                this.chart.renderTo.style.height = `${minChartHeight}px`;
+              if (!height && curHeight !== this.chart.chartHeight) {
+                changed = true;
+                this.chart.renderTo.style.height = `${curHeight}px`;
               }
-              this._elements = elements;
-              this.chart.setSize(
-                isGrowWidth ? minChartWidth : null,
-                isGrowHeight ? minChartHeight : null
-              );
-              return false;
+              if (changed) {
+                this._elements = elements;
+                this.chart.setSize(curWidth, curHeight, false);
+                return false;
+              }
             }
           }
 
@@ -267,20 +288,56 @@ word-break: break-word;
 
           const boxElement = ren
             .rect(box.x, box.y, box.w, box.h, 3)
-            .css({ cursor: node.children.length < 1 ? "default" : "pointer" })
+            .css({
+              cursor: node.children.length < 1 ? "default" : "pointer"
+            })
             .attr({
               fill: node.toggle
                 ? config.node.backgroundColor
                 : config.node.backgroundColorToggle,
               zIndex: 0,
-              id: node.item.id
+              id: node.item.id,
+              stroke: config.node.border.color, // basic
+              "stroke-width": config.node.border.width // hyphenated
             })
             .on("mouseover", () => {
+              if (highchartMajorVersion > 5) {
+                boxElement.animate(
+                  {
+                    fill: node.toggle
+                      ? config.node.hover.backgroundColor
+                      : config.node.hover.backgroundColorToggle
+                  },
+                  { duration: 300 }
+                );
+              } else {
+                boxElement.attr({
+                  fill: node.toggle
+                    ? config.node.hover.backgroundColor
+                    : config.node.hover.backgroundColorToggle
+                });
+              }
               if (tooltipElement) {
                 tooltipElement.animate({ opacity: 1 }, { duration: 300 });
               }
             })
             .on("mouseout", () => {
+              if (highchartMajorVersion > 5) {
+                boxElement.animate(
+                  {
+                    fill: node.toggle
+                      ? config.node.backgroundColor
+                      : config.node.backgroundColorToggle
+                  },
+                  { duration: 300 }
+                );
+              } else {
+                boxElement.attr({
+                  fill: node.toggle
+                    ? config.node.backgroundColor
+                    : config.node.backgroundColorToggle
+                });
+              }
               if (tooltipElement) {
                 tooltipElement.animate({ opacity: 0 }, { duration: 300 });
               }
@@ -338,21 +395,23 @@ word-break: break-word;
 
               // draw line over children
               if (node.children.length > 1) {
+                const offsetX = (config.node.width + config.node.marginX);
+                const linePositionY = nodeBottomMiddle.y + config.node.marginY / 2;
                 elements.push(
                   ren
                     .path([
                       "M",
-                      node.getRightMostChild().x *
-                        (config.node.width + config.node.marginX) +
-                        config.node.width / 2 -
-                        config.connector.width / 2,
-                      nodeBottomMiddle.y + config.node.marginY / 2,
+                      node.getRightMostChild().x * offsetX +
+                      config.node.width / 2 -
+                      config.connector.width / 2 +
+                      config.node.border.width / 2,
+                      linePositionY,
                       "L",
-                      node.getLeftMostChild().x *
-                        (config.node.width + config.node.marginX) +
-                        config.node.width / 2 +
-                        config.connector.width / 2,
-                      nodeBottomMiddle.y + config.node.marginY / 2
+                      node.getLeftMostChild().x * offsetX +
+                      config.node.width / 2 +
+                      config.connector.width / 2 +
+                      config.node.border.width / 2,
+                      linePositionY
                     ])
                     .attr({
                       "stroke-width": config.connector.width,

@@ -77,8 +77,10 @@ export default class Tree<T extends TreeDataNode> {
 
     modSum += node.mod;
 
-    for (const child of node.children) {
-      Tree.getLeftContour(child, modSum, values);
+    if (node.toggle) {
+      for (const child of node.children) {
+        Tree.getLeftContour(child, modSum, values);
+      }
     }
   }
 
@@ -93,8 +95,11 @@ export default class Tree<T extends TreeDataNode> {
     }
 
     modSum += node.mod;
-    for (const child of node.children) {
-      Tree.getRightContour(child, modSum, values);
+
+    if (node.toggle) {
+      for (const child of node.children) {
+        Tree.getRightContour(child, modSum, values);
+      }
     }
   }
 
@@ -174,7 +179,7 @@ export default class Tree<T extends TreeDataNode> {
       }
     }
 
-    if (node.children.length > 0 && !node.isLeftMost()) {
+    if (node.children.length > 0 && !node.isLeftMost() && node.toggle) {
       // Since subtrees can overlap, check for conflicts and shift tree right if needed
       Tree.checkForConflicts(node);
     }

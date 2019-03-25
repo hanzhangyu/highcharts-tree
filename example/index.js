@@ -29,10 +29,6 @@ const chartConfig = {
         title: {
           marginY: 4
         },
-        padding: {
-          x: 0,
-          y: 0
-        },
         content: {
           align: "left"
         }
@@ -64,8 +60,8 @@ const chartConfig = {
       currencySymbol: "$",
       currencySymbolOnLeft: true
     },
-    width: 1,
-    height: 1
+    width: 0, // set 0 to auto size
+    height: 0 // set 0 to auto size
   },
   series: [{ data: [treeChartData] }],
   title: { text: "Title", margin: 10 },
