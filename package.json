@@ -2,6 +2,13 @@
   "name": "highcharts-tree",
   "version": "0.1.0",
   "description": "Create tree type in Highcharts",
+  "author": "paulhan <zhangyu.han@outlook.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hanzhangyu/highcharts-tree"
+  },
+  "homepage": "https://github.com/hanzhangyu/highcharts-tree",
+  "license": "MIT",
   "main": "lib/index.js",
   "types": "types/index.d.ts",
   "scripts": {
@@ -18,8 +25,6 @@
     "tree",
     "dendrogram"
   ],
-  "author": "zhangyu.han@outlook.com",
-  "license": "MIT",
   "peerDependencies": {
     "highcharts": "^5.0.0"
   },
