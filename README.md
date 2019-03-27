@@ -129,7 +129,7 @@ import {HighchartsTreeConfig} from "highcharts-tree/types";
 }
 ```
 ## Screenshot
-![](./example/screenshot.png)
+![][screenshot-img]
 
 ## Changelog
 
@@ -149,3 +149,4 @@ see [release](https://github.com/hanzhangyu/highcharts-tree/releases)
 [npm-dl-img]: https://img.shields.io/npm/dm/highcharts-tree.svg?style=flat-square
 [npm-lc-img]: https://img.shields.io/npm/l/highcharts-tree.svg?style=flat-square
 [npm-url]: https://www.npmjs.com/package/highcharts-tree
+[screenshot-img]: https://raw.githubusercontent.com/hanzhangyu/highcharts-tree/test/example/screenshot.png
