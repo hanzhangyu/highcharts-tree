@@ -1,7 +1,12 @@
 # highcharts-tree
 
-[![Build Status](https://www.travis-ci.org/hanzhangyu/highcharts-tree.svg?branch=master)](https://www.travis-ci.org/hanzhangyu/highcharts-tree)
-[![Coverage Status](https://coveralls.io/repos/github/hanzhangyu/highcharts-tree/badge.svg?branch=master)](https://coveralls.io/github/hanzhangyu/highcharts-tree?branch=master)
+[![Build Status][ci-img]][ci-url]
+[![Code coverage][cov-img]][cov-url]
+[![Code style][lint-img]][lint-url]
+[![Dev Dependency Status][dev-dep-img]][dev-dep-url]
+[![NPM version][npm-ver-img]][npm-url]
+[![NPM downloads][npm-dl-img]][npm-url]
+[![NPM license][npm-lc-img]][npm-url]
 
 ## Why?
 
@@ -129,3 +134,18 @@ import {HighchartsTreeConfig} from "highcharts-tree/types";
 ## Changelog
 
 see [release](https://github.com/hanzhangyu/highcharts-tree/releases)
+
+[ci-img]: https://img.shields.io/travis/hanzhangyu/highcharts-tree.svg?style=flat-square
+[ci-url]: https://travis-ci.org/hanzhangyu/highcharts-tree
+[cov-img]: https://img.shields.io/coveralls/hanzhangyu/highcharts-tree.svg?style=flat-square
+[cov-url]: https://coveralls.io/github/hanzhangyu/highcharts-tree?branch=master
+[lint-img]: https://img.shields.io/badge/code%20style-handsome-brightgreen.svg?style=flat-square
+[lint-url]: https://github.com/hanzhangyu/eslint-config-handsome
+[dep-img]: https://img.shields.io/david/hanzhangyu/highcharts-tree.svg?style=flat-square
+[dep-url]: https://david-dm.org/hanzhangyu/highcharts-tree
+[dev-dep-img]: https://img.shields.io/david/dev/hanzhangyu/highcharts-tree.svg?style=flat-square
+[dev-dep-url]: https://david-dm.org/hanzhangyu/highcharts-tree#info=devDependencies
+[npm-ver-img]: https://img.shields.io/npm/v/highcharts-tree.svg?style=flat-square
+[npm-dl-img]: https://img.shields.io/npm/dm/highcharts-tree.svg?style=flat-square
+[npm-lc-img]: https://img.shields.io/npm/l/highcharts-tree.svg?style=flat-square
+[npm-url]: https://www.npmjs.com/package/highcharts-tree

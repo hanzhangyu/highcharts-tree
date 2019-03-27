@@ -1,6 +1,6 @@
 {
   "name": "highcharts-tree",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Create tree type in Highcharts",
   "main": "lib/index.js",
   "types": "types/index.d.ts",
@@ -34,6 +34,11 @@
     "tslint": "^5.14.0",
     "typescript": "^3.3.3333"
   },
+  "files": [
+    "lib",
+    "src",
+    "types"
+  ],
   "ava": {
     "compileEnhancements": false,
     "extensions": [
