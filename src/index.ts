@@ -1,3 +1,4 @@
+import {TreeNodeData, HighchartsTreeConfig} from "../types";
 import TreeNode from "./TreeNode";
 import Tree from "./Tree";
 
@@ -11,16 +12,13 @@ const NODE_WIDTH_OFFSET = SHAPE_OFFSET * 2;
 // @types/highcharts not support some method
 export default (Highcharts: any) => {
   const highchartMajorVersion = Highcharts.version.split(".")[0];
-  const defaultConfig = {
-    autoSize: {
-      x: true,
-      y: false,
-    },
+  const defaultConfig: HighchartsTreeConfig = {
     node: {
       width: 200,
       height: 0, // null || 0 = auto-calculated
       marginX: 20,
       marginY: 20,
+      textColor: "#454d59",
       backgroundColor: "#f2f2f2",
       backgroundColorToggle: "#cccccc",
       title: {
@@ -43,8 +41,8 @@ export default (Highcharts: any) => {
         color: "#919191"
       },
       // @ts-ignore: Unused parameter index
-      dataFormatter(date: string | number, index: number) {
-        return date.toLocaleString();
+      dataFormatter(data: string | number, index: number) {
+        return data.toLocaleString();
       }
     },
     row: {
@@ -54,10 +52,10 @@ export default (Highcharts: any) => {
     tooltip: {
       enabled: false,
       backgroundColor: "rgba(0,0,0,0.6)",
-      borderRadius: 3,
+      borderRadius: "3px",
       textColor: "#fff",
       width: 0, // set 0 to use node width
-      tooltipFormatter(item: TreeDataNode) {
+      tooltipFormatter(item: TreeNodeData) {
         return `${item.content.title}<br>${item.content.data.join("<br>")}`;
       }
     },
@@ -70,8 +68,7 @@ export default (Highcharts: any) => {
       nodeWidth: 20,
       marginX: 10,
       marginY: 25
-    },
-    textColor: "#454d59",
+    }
   };
 
   const { seriesType, seriesTypes, each, merge } = Highcharts;
@@ -102,7 +99,7 @@ export default (Highcharts: any) => {
         let elements: ElementObjectExtended[] = this._elements;
 
         if (!elements) this._elements = elements = [];
-        const drawNode = (node: TreeNode<TreeDataNode>) => {
+        const drawNode = (node: TreeNode<TreeNodeData>) => {
           const box = {
             x:
               node.x * (config.node.width + config.node.marginX) +
@@ -126,7 +123,7 @@ export default (Highcharts: any) => {
             .css({
               pointerEvents: "none",
               fontSize: "14px",
-              color: config.textColor,
+              color: config.node.textColor,
               fontWeight: "bold",
               width: box.w - NODE_WIDTH_OFFSET - config.node.padding.x * 2,
               textOverflow: "ellipsis",
@@ -162,7 +159,10 @@ export default (Highcharts: any) => {
               );
             }
 
-            const text = config.node.dataFormatter(node.item.content.data[i], i);
+            const text = config.node.dataFormatter(
+              node.item.content.data[i],
+              i
+            );
             const textAlign = config.node.content.align;
             const textElementWidth =
               box.w -
@@ -180,7 +180,7 @@ export default (Highcharts: any) => {
               )
               .css({
                 fontSize: "13px",
-                color: config.textColor,
+                color: config.node.textColor,
                 width: computedWidth,
                 textOverflow: "ellipsis",
                 pointerEvents: "none"
@@ -213,21 +213,21 @@ export default (Highcharts: any) => {
               config.node.padding.y;
           }
           if (node === this._tree.root) {
-            const {width, height} = this.chart.userOptions.chart;
+            const { width, height } = this.chart.userOptions.chart;
             if (!width || !height) {
               let changed = false;
               const curWidth =
-                  this._tree.root.width *
+                this._tree.root.width *
                   (config.node.width + config.node.marginX) +
-                  config.node.width +
-                  config.node.border.width;
+                config.node.width +
+                config.node.border.width;
               const curHeight =
-                    this._tree.root.height *
-                    (config.node.height + config.node.marginY) +
-                    config.node.height +
-                    config.legend.marginY +
-                    config.row.height +
-                    this._titleOffsetY;
+                this._tree.root.height *
+                  (config.node.height + config.node.marginY) +
+                config.node.height +
+                config.legend.marginY +
+                config.row.height +
+                this._titleOffsetY;
               if (!width && curWidth !== this.chart.chartWidth) {
                 changed = true;
                 this.chart.renderTo.style.width = `${curWidth}px`;
@@ -256,6 +256,7 @@ export default (Highcharts: any) => {
             tooltipElement = ren
               .label(
                 `<div style="
+border-radius: ${config.tooltip.borderRadius};
 background-color: ${config.tooltip.backgroundColor};
 color: ${config.tooltip.textColor};
 font-size: 12px;
@@ -393,22 +394,23 @@ word-break: break-word;
 
               // draw line over children
               if (node.children.length > 1) {
-                const offsetX = (config.node.width + config.node.marginX);
-                const linePositionY = nodeBottomMiddle.y + config.node.marginY / 2;
+                const offsetX = config.node.width + config.node.marginX;
+                const linePositionY =
+                  nodeBottomMiddle.y + config.node.marginY / 2;
                 elements.push(
                   ren
                     .path([
                       "M",
                       node.getRightMostChild().x * offsetX +
-                      config.node.width / 2 -
-                      config.connector.width / 2 +
-                      config.node.border.width / 2,
+                        config.node.width / 2 -
+                        config.connector.width / 2 +
+                        config.node.border.width / 2,
                       linePositionY,
                       "L",
                       node.getLeftMostChild().x * offsetX +
-                      config.node.width / 2 +
-                      config.connector.width / 2 +
-                      config.node.border.width / 2,
+                        config.node.width / 2 +
+                        config.connector.width / 2 +
+                        config.node.border.width / 2,
                       linePositionY
                     ])
                     .attr({

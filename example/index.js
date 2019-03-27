@@ -20,6 +20,7 @@ const chartConfig = {
     type: "tree",
     config: {
       node: {
+        textColor: "#454d59",
         width: 200,
         height: 0, // null || 0 = auto-calculated
         marginX: 20,
@@ -27,7 +28,7 @@ const chartConfig = {
         backgroundColor: "#f2f2f2",
         backgroundColorToggle: "#cccccc",
         title: {
-          marginY: 4
+          marginTop: 4
         },
         content: {
           align: "left"
@@ -59,7 +60,6 @@ const chartConfig = {
         marginX: 10,
         marginY: 25
       },
-      textColor: "#454d59",
     },
     width: 0, // set 0 to auto size
     height: 0 // set 0 to auto size

@@ -1,14 +1,14 @@
-import { TreeDataNode } from "./helper/types";
+import {TreeNodeData} from "../types";
 import anyTest, { TestInterface } from "ava";
 import TreeNode from "../src/TreeNode";
 
 const NAMESPACE = "TreeNode: ";
 
 const test = anyTest as TestInterface<{
-  parentNode: TreeNode<TreeDataNode>;
-  childNode1: TreeNode<TreeDataNode>;
-  childNode2: TreeNode<TreeDataNode>;
-  childNode3: TreeNode<TreeDataNode>;
+  parentNode: TreeNode<TreeNodeData>;
+  childNode1: TreeNode<TreeNodeData>;
+  childNode2: TreeNode<TreeNodeData>;
+  childNode3: TreeNode<TreeNodeData>;
 }>;
 
 test.before(t => {

@@ -1,8 +1,9 @@
+import {TreeNodeData} from "../types";
 import TreeNode from "./TreeNode";
 import Dictionary from "./Dictionary";
 
-export default class Tree<T extends TreeDataNode> {
-  public static getTree<T extends TreeDataNode>(tree?: Tree<T>, data?: T) {
+export default class Tree<T extends TreeNodeData> {
+  public static getTree<T extends TreeNodeData>(tree?: Tree<T>, data?: T) {
     return tree && tree.root ? tree : new Tree(data).build();
   }
 
@@ -10,7 +11,7 @@ export default class Tree<T extends TreeDataNode> {
   private static siblingDistance = 0.0;
   private static treeDistance = 0.0;
 
-  private static initializeNodes<T extends TreeDataNode>(
+  private static initializeNodes<T extends TreeNodeData>(
     node: TreeNode<T>,
     depth: number = 0
   ) {
@@ -24,7 +25,7 @@ export default class Tree<T extends TreeDataNode> {
     }
   }
 
-  private static checkForConflicts<T extends TreeDataNode>(node: TreeNode<T>) {
+  private static checkForConflicts<T extends TreeNodeData>(node: TreeNode<T>) {
     const nodeContour: Dictionary<number, number> = new Dictionary();
     Tree.getLeftContour(node, 0, nodeContour);
     let sibling = node.getLeftMostSibling();
@@ -65,7 +66,7 @@ export default class Tree<T extends TreeDataNode> {
     }
   }
 
-  private static getLeftContour<T extends TreeDataNode>(
+  private static getLeftContour<T extends TreeNodeData>(
     node: TreeNode<T>,
     modSum: number,
     values: Dictionary<number, number>
@@ -84,7 +85,7 @@ export default class Tree<T extends TreeDataNode> {
     }
   }
 
-  private static getRightContour<T extends TreeDataNode>(
+  private static getRightContour<T extends TreeNodeData>(
     node: TreeNode<T>,
     modSum: number,
     values: Dictionary<number, number>
@@ -103,7 +104,7 @@ export default class Tree<T extends TreeDataNode> {
     }
   }
 
-  private static centerNodesBetween<T extends TreeDataNode>(
+  private static centerNodesBetween<T extends TreeNodeData>(
     leftNode: TreeNode<T>,
     rightNode: TreeNode<T>
   ) {

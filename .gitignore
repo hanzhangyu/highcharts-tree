@@ -85,3 +85,6 @@ typings/
 
 # Custom file
 dist
+
+# Idea
+.idea/

@@ -1,10 +1,10 @@
-import { TreeDataNode } from "./helper/types";
+import {TreeNodeData} from "../types";
 import anyTest, { TestInterface } from "ava";
 import { dataForShift, dataForShiftOvermuch } from "./helper/data";
 import Tree from "../src/Tree";
 import TreeNode from "../src/TreeNode";
 
-interface TreeDataNodeWithResult extends TreeDataNode {
+interface TreeNodeDataWithResult extends TreeNodeData {
   result: {
     x: number;
     y: number;
@@ -15,8 +15,8 @@ interface TreeDataNodeWithResult extends TreeDataNode {
 const NAMESPACE = "Tree: ";
 
 const test = anyTest as TestInterface<{
-  tree: Tree<TreeDataNodeWithResult>;
-  treeNode7: TreeNode<TreeDataNodeWithResult>;
+  tree: Tree<TreeNodeDataWithResult>;
+  treeNode7: TreeNode<TreeNodeDataWithResult>;
 }>;
 
 test.before(t => {
@@ -39,12 +39,12 @@ test(`${NAMESPACE}test for fix shift`, t => {
 });
 
 test(`${NAMESPACE}test for node move`, t => {
-  const loop = (node: TreeNode<TreeDataNodeWithResult>) => {
+  const loop = (node: TreeNode<TreeNodeDataWithResult>) => {
     t.is(node.x, node.item.result.x);
     t.is(node.y, node.item.result.y);
     t.is(node.width, node.item.result.width);
     if (node.children) {
-      node.children.forEach((child: TreeNode<TreeDataNodeWithResult>) =>
+      node.children.forEach((child: TreeNode<TreeNodeDataWithResult>) =>
         loop(child)
       );
     }
