@@ -2,7 +2,6 @@
 
 [![Build Status][ci-img]][ci-url]
 [![Code coverage][cov-img]][cov-url]
-[![Code style][lint-img]][lint-url]
 [![Dev Dependency Status][dev-dep-img]][dev-dep-url]
 [![NPM version][npm-ver-img]][npm-url]
 [![NPM downloads][npm-dl-img]][npm-url]
@@ -139,8 +138,6 @@ see [release](https://github.com/hanzhangyu/highcharts-tree/releases)
 [ci-url]: https://travis-ci.org/hanzhangyu/highcharts-tree
 [cov-img]: https://img.shields.io/coveralls/hanzhangyu/highcharts-tree.svg?style=flat-square
 [cov-url]: https://coveralls.io/github/hanzhangyu/highcharts-tree?branch=master
-[lint-img]: https://img.shields.io/badge/code%20style-handsome-brightgreen.svg?style=flat-square
-[lint-url]: https://github.com/hanzhangyu/eslint-config-handsome
 [dep-img]: https://img.shields.io/david/hanzhangyu/highcharts-tree.svg?style=flat-square
 [dep-url]: https://david-dm.org/hanzhangyu/highcharts-tree
 [dev-dep-img]: https://img.shields.io/david/dev/hanzhangyu/highcharts-tree.svg?style=flat-square
