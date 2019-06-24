@@ -1,0 +1,81 @@
+$colors: #7cb5ec #434348 #90ed7d #f7a35c #8085e9 #f15c80 #e4d354 #2b908f #f45b5b #91e8e1 !default;
+$highcharts-tree-node-color: #454d59 !default; // node.textColor
+$highcharts-tree-node-bg: #f2f2f2 !default; // node.backgroundColor
+$highcharts-tree-node-bg-toggle: #cccccc !default; // node.backgroundColorToggle
+$highcharts-tree-node-bg-hover: #d6d6d6 !default; // node.hover.backgroundColor
+$highcharts-tree-node-bg-toggle-hover: #cccccc !default; // node.hover.backgroundColorToggle
+$highcharts-tree-node-border-color: #919191 !default; // node.border.color
+$highcharts-tree-tooltip-color: #fff !default; // tooltip.textColor
+$highcharts-tree-tooltip-bg: rgba(0,0,0,0.6) !default; // tooltip.backgroundColor
+$highcharts-tree-connector-color: #bcbcbc !default; // connector.color
+
+
+.highcharts-tree-node-title text {
+  pointer-events: none;
+  font-size: 14px;
+  color: $highcharts-tree-node-color;
+  font-weight: bold;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
+.highcharts-tree-node-data text {
+  pointer-events: none;
+  font-size: 13px;
+  color: $highcharts-tree-node-color;
+  text-overflow: ellipsis;
+}
+
+.highcharts-tree-node-tooltip-inner {
+  border-radius: 3px;
+  background-color: $highcharts-tree-tooltip-bg;
+  color: $highcharts-tree-tooltip-color;
+  font-size: 12px;
+  white-space: initial;
+  word-break: break-word;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.highcharts-tree-node-tooltip.hover {
+  .highcharts-tree-node-tooltip-inner {
+    opacity: 1;
+  }
+}
+
+.highcharts-tree-box {
+  fill: $highcharts-tree-node-bg;
+  stroke: $highcharts-tree-node-border-color;
+  stroke-width: 3px;
+  &.fold {
+    fill: $highcharts-tree-node-bg-toggle
+  }
+
+  &:hover {
+    fill: $highcharts-tree-node-bg-hover;
+    transition: fill 0.3s ease-in-out;
+
+    &.fold {
+      fill: $highcharts-tree-node-bg-toggle-hover;
+    }
+  }
+}
+
+.highcharts-tree-connector {
+  stroke-width: 4px;
+  stroke: $highcharts-tree-connector-color;
+}
+
+
+@for $i from 1 through length($colors) {
+  $color: nth($colors, $i);
+  .highcharts-tree-legend-#{$i - 1} {
+    fill: $color;
+  }
+}
+
+.highcharts-tree-legend-text {
+  font-size: 14px;
+  color: $highcharts-tree-node-color;
+  font-weight: bold;
+}

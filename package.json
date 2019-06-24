@@ -1,6 +1,6 @@
 {
   "name": "highcharts-tree",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Create tree type in Highcharts",
   "author": "paulhan <zhangyu.han@outlook.com>",
   "repository": {
@@ -13,20 +13,24 @@
   "types": "types/index.d.ts",
   "scripts": {
     "dev": "tsc --watch & parcel example/index.html",
-    "build": "tsc",
+    "build": "buildCSS && tsc",
+    "buildCSS": "sass css/highcharts-tree.scss css/highcharts-tree.css",
     "lint": "tslint --project \"./tsconfig.json\"",
     "report": "nyc report --reporter=html",
     "ut": "tsc && nyc ava --verbose --color",
     "test": "npm run lint && npm run ut",
     "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
+  "browserslist": [
+    "last 1 Chrome version"
+  ],
   "keywords": [
     "highcharts",
     "tree",
     "dendrogram"
   ],
   "peerDependencies": {
-    "highcharts": "^5.0.0"
+    "highcharts": ">=5.0.0"
   },
   "devDependencies": {
     "@types/highcharts": "^5.0.38",
@@ -35,9 +39,11 @@
     "nyc": "^13.3.0",
     "parcel-bundler": "^1.12.2",
     "prettier": "^1.16.4",
+    "sass": "^1.21.0",
     "ts-node": "^8.0.3",
     "tslint": "^5.14.0",
-    "typescript": "^3.3.3333"
+    "typescript": "^3.3.3333",
+    "highcharts": ">=5.0.0"
   },
   "files": [
     "lib",
@@ -66,8 +72,5 @@
     "exclude": [
       "src/index.ts"
     ]
-  },
-  "dependencies": {
-    "highcharts": "^5.0.0"
   }
 }

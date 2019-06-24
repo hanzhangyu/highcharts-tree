@@ -1,4 +1,4 @@
-import {TreeNodeData, HighchartsTreeConfig} from "../types";
+import { TreeNodeData, HighchartsTreeConfig } from "../types";
 import TreeNode from "./TreeNode";
 import Tree from "./Tree";
 
@@ -118,19 +118,37 @@ export default (Highcharts: any) => {
               node.item.content.title,
               box.x + config.node.padding.x,
               box.y + config.node.padding.y + config.node.title.marginTop,
-              "rect"
+              "rect",
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              "tree-node-title"
             )
-            .css({
-              pointerEvents: "none",
-              fontSize: "14px",
-              color: config.node.textColor,
-              fontWeight: "bold",
-              width: box.w - NODE_WIDTH_OFFSET - config.node.padding.x * 2,
-              textOverflow: "ellipsis",
-              textAlign: "center"
-            })
             .attr({ zIndex: 1 })
             .add();
+
+          /**
+           * in this line, highcharts will get the computed style
+           * so add it to DOM first to create CSSOM
+           * @link
+           * https://github.com/highcharts/highcharts/blob/master/ts/parts/SvgRenderer.ts#L3716
+           */
+          titleElement.css(
+            ren.styledMode
+              ? {
+                  width: box.w - NODE_WIDTH_OFFSET - config.node.padding.x * 2
+                }
+              : {
+                  pointerEvents: "none",
+                  fontSize: "14px",
+                  color: config.node.textColor,
+                  fontWeight: "bold",
+                  width: box.w - NODE_WIDTH_OFFSET - config.node.padding.x * 2,
+                  textOverflow: "ellipsis",
+                  textAlign: "center"
+                }
+          );
           // - center it
           titleElement.attr({ x: box.x + box.w / 2 - titleElement.width / 2 });
           elements.push(titleElement);
@@ -176,20 +194,30 @@ export default (Highcharts: any) => {
                 text,
                 box.x + offsetTextByLegend + config.node.padding.x,
                 box.y + rowsY + config.row.height * i,
-                "rect"
+                "rect",
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                "tree-node-data"
               )
-              .css({
-                fontSize: "13px",
-                color: config.node.textColor,
-                width: computedWidth,
-                textOverflow: "ellipsis",
-                pointerEvents: "none"
-              })
               .attr({
                 zIndex: 1,
                 width: computedWidth
               })
               .add();
+            textElement.css(
+              ren.styledMode
+                ? {
+                    width: computedWidth
+                  }
+                : {
+                    fontSize: "13px",
+                    color: config.node.textColor,
+                    textOverflow: "ellipsis",
+                    pointerEvents: "none"
+                  }
+            );
 
             // - allign right
             // textElement.attr({x: box.x + box.w - textElement.width - config.row.marginX});
@@ -253,9 +281,13 @@ export default (Highcharts: any) => {
             if (tooltipX + tooltipW > this.chart.chartWidth) {
               tooltipX = box.x - tooltipW;
             }
-            tooltipElement = ren
-              .label(
-                `<div style="
+            const styleStr = ren.styledMode
+              ? `
+min-height: ${box.h}px;
+margin-left: -${SHAPE_OFFSET}px;
+margin-top: -${SHAPE_OFFSET}px;
+width: ${tooltipW}px;`
+              : `
 border-radius: ${config.tooltip.borderRadius};
 background-color: ${config.tooltip.backgroundColor};
 color: ${config.tooltip.textColor};
@@ -266,7 +298,12 @@ margin-top: -${SHAPE_OFFSET}px;
 width: ${tooltipW}px;
 white-space: initial;
 word-break: break-word;
-">${config.tooltip.tooltipFormatter(node.item)}</div>`,
+`;
+            tooltipElement = ren
+              .label(
+                `<div
+${ren.styledMode ? 'class="highcharts-tree-node-tooltip-inner"' : ""}
+style="${styleStr}">${config.tooltip.tooltipFormatter(node.item)}</div>`,
                 tooltipX,
                 box.y,
                 "rect",
@@ -277,10 +314,17 @@ word-break: break-word;
               .css({
                 pointerEvents: "none"
               })
-              .attr({
-                zIndex: 5,
-                opacity: 0
-              })
+              .attr(
+                ren.styledMode
+                  ? {
+                      zIndex: 5,
+                      class: "highcharts-tree-node-tooltip"
+                    }
+                  : {
+                      zIndex: 5,
+                      opacity: 0
+                    }
+              )
               .add();
             elements.push(tooltipElement);
           }
@@ -290,16 +334,32 @@ word-break: break-word;
             .css({
               cursor: node.children.length < 1 ? "default" : "pointer"
             })
-            .attr({
-              fill: node.toggle
-                ? config.node.backgroundColor
-                : config.node.backgroundColorToggle,
-              zIndex: 0,
-              id: node.item.id,
-              stroke: config.node.border.color, // basic
-              "stroke-width": config.node.border.width // hyphenated
-            })
+            .attr(
+              ren.styledMode
+                ? {
+                    zIndex: 0,
+                    id: node.item.id,
+                    class: `highcharts-tree-box${node.toggle ? "" : " fold"}`
+                  }
+                : {
+                    fill: node.toggle
+                      ? config.node.backgroundColor
+                      : config.node.backgroundColorToggle,
+                    zIndex: 0,
+                    id: node.item.id,
+                    stroke: config.node.border.color, // basic
+                    "stroke-width": config.node.border.width // hyphenated
+                  }
+            )
             .on("mouseover", () => {
+              if (ren.styledMode) {
+                if (tooltipElement) {
+                  tooltipElement.attr({
+                    class: "highcharts-tree-node-tooltip hover"
+                  });
+                }
+                return;
+              }
               if (highchartMajorVersion > 5) {
                 boxElement.animate(
                   {
@@ -321,6 +381,14 @@ word-break: break-word;
               }
             })
             .on("mouseout", () => {
+              if (ren.styledMode) {
+                if (tooltipElement) {
+                  tooltipElement.attr({
+                    class: "highcharts-tree-node-tooltip"
+                  });
+                }
+                return;
+              }
               if (highchartMajorVersion > 5) {
                 boxElement.animate(
                   {
@@ -362,10 +430,16 @@ word-break: break-word;
                   box.x + box.w / 2,
                   box.y - config.node.marginY / 2 - config.connector.width / 2
                 ])
-                .attr({
-                  "stroke-width": config.connector.width,
-                  stroke: config.connector.color
-                })
+                .attr(
+                  ren.styledMode
+                    ? {
+                        class: "highcharts-tree-connector"
+                      }
+                    : {
+                        "stroke-width": config.connector.width,
+                        stroke: config.connector.color
+                      }
+                )
             );
           }
 
@@ -386,10 +460,16 @@ word-break: break-word;
                     nodeBottomMiddle.x,
                     nodeBottomMiddle.y + config.node.marginY / 2
                   ])
-                  .attr({
-                    "stroke-width": config.connector.width,
-                    stroke: config.connector.color
-                  })
+                  .attr(
+                    ren.styledMode
+                      ? {
+                          class: "highcharts-tree-connector"
+                        }
+                      : {
+                          "stroke-width": config.connector.width,
+                          stroke: config.connector.color
+                        }
+                  )
               );
 
               // draw line over children
@@ -413,10 +493,16 @@ word-break: break-word;
                         config.node.border.width / 2,
                       linePositionY
                     ])
-                    .attr({
-                      "stroke-width": config.connector.width,
-                      stroke: config.connector.color
-                    })
+                    .attr(
+                      ren.styledMode
+                        ? {
+                            class: "highcharts-tree-connector"
+                          }
+                        : {
+                            "stroke-width": config.connector.width,
+                            stroke: config.connector.color
+                          }
+                    )
                 );
               }
             }
@@ -480,7 +566,11 @@ word-break: break-word;
                     config.legend.nodeWidth,
                     config.row.height
                   )
-                  .attr({ fill: colors[i] })
+                  .attr(
+                    ren.styledMode
+                      ? { class: `highcharts-tree-legend-${i}` }
+                      : { fill: colors[i] }
+                  )
               );
 
               /*spacing between legend box and legend text*/
@@ -492,12 +582,23 @@ word-break: break-word;
                   offsetX + config.legend.marginX,
                   maxY + config.legend.marginY
                 )
-                .css({
-                  fontSize: "14px",
-                  color: config.textColor,
-                  fontWeight: "bold"
-                })
-                .attr({ zIndex: 1 })
+                .css(
+                  ren.styledMode
+                    ? {}
+                    : {
+                        fontSize: "14px",
+                        color: config.node.textColor,
+                        fontWeight: "bold"
+                      }
+                )
+                .attr(
+                  ren.styledMode
+                    ? {
+                        class: "highcharts-tree-legend-text",
+                        zIndex: 1
+                      }
+                    : { zIndex: 1 }
+                )
                 .add();
               elements.push(legendTextElement);
 
