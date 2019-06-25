@@ -88,8 +88,9 @@ export default (Highcharts: any) => {
           typeof data === "undefined" ||
           typeof data.tree === "undefined" ||
           data.tree === null
-        )
+        ) {
           return;
+        }
         this._tree = Tree.getTree(this._tree, this.options.data.tree);
       },
       translate() {
