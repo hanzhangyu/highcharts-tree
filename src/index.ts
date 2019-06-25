@@ -82,6 +82,14 @@ export default (Highcharts: any) => {
     {
       init() {
         seriesTypes.pie.prototype.init.apply(this, arguments);
+        const { data } = this.options;
+        if (
+          data === null ||
+          typeof data === "undefined" ||
+          typeof data.tree === "undefined" ||
+          data.tree === null
+        )
+          return;
         this._tree = Tree.getTree(this._tree, this.options.data.tree);
       },
       translate() {
@@ -97,6 +105,60 @@ export default (Highcharts: any) => {
         let maxX = 0;
         let maxY = 0;
         let elements: ElementObjectExtended[] = this._elements;
+
+        const staticProps = ren.styledMode
+          ? {
+              titleCss: {},
+              textCss: {},
+              tooltipStr: {
+                style: "",
+                class: `class="highcharts-tree-node-tooltip-inner"`
+              },
+              tooltipAttr: {
+                class: "highcharts-tree-node-tooltip"
+              },
+              boxAttr: { zIndex: 0 },
+              connectorAttr: {
+                class: "highcharts-tree-connector"
+              }
+            }
+          : {
+              titleCss: {
+                pointerEvents: "none",
+                fontSize: "14px",
+                color: config.node.textColor,
+                fontWeight: "bold",
+                textOverflow: "ellipsis",
+                textAlign: "center"
+              },
+              textCss: {
+                fontSize: "13px",
+                color: config.node.textColor,
+                textOverflow: "ellipsis",
+                pointerEvents: "none"
+              },
+              tooltipStr: {
+                style: `border-radius: ${config.tooltip.borderRadius};
+background-color: ${config.tooltip.backgroundColor};
+color: ${config.tooltip.textColor};
+font-size: 12px;
+white-space: initial;
+word-break: break-word;`,
+                class: ""
+              },
+              tooltipAttr: {
+                opacity: 0
+              },
+              boxAttr: {
+                zIndex: 0,
+                stroke: config.node.border.color, // basic
+                "stroke-width": config.node.border.width // hyphenated
+              },
+              connectorAttr: {
+                "stroke-width": config.connector.width,
+                stroke: config.connector.color
+              }
+            };
 
         if (!elements) this._elements = elements = [];
         const drawNode = (node: TreeNode<TreeNodeData>) => {
@@ -134,21 +196,10 @@ export default (Highcharts: any) => {
            * @link
            * https://github.com/highcharts/highcharts/blob/master/ts/parts/SvgRenderer.ts#L3716
            */
-          titleElement.css(
-            ren.styledMode
-              ? {
-                  width: box.w - NODE_WIDTH_OFFSET - config.node.padding.x * 2
-                }
-              : {
-                  pointerEvents: "none",
-                  fontSize: "14px",
-                  color: config.node.textColor,
-                  fontWeight: "bold",
-                  width: box.w - NODE_WIDTH_OFFSET - config.node.padding.x * 2,
-                  textOverflow: "ellipsis",
-                  textAlign: "center"
-                }
-          );
+          titleElement.css({
+            ...staticProps.titleCss,
+            width: box.w - NODE_WIDTH_OFFSET - config.node.padding.x * 2
+          });
           // - center it
           titleElement.attr({ x: box.x + box.w / 2 - titleElement.width / 2 });
           elements.push(titleElement);
@@ -173,7 +224,11 @@ export default (Highcharts: any) => {
                     config.row.height
                   )
                   .css({ pointerEvents: "none" })
-                  .attr({ fill: colors[i], zIndex: 1 })
+                  .attr(
+                    ren.styledMode
+                      ? { class: `highcharts-tree-legend-${i}`, zIndex: 1 }
+                      : { fill: colors[i], zIndex: 1 }
+                  )
               );
             }
 
@@ -206,18 +261,10 @@ export default (Highcharts: any) => {
                 width: computedWidth
               })
               .add();
-            textElement.css(
-              ren.styledMode
-                ? {
-                    width: computedWidth
-                  }
-                : {
-                    fontSize: "13px",
-                    color: config.node.textColor,
-                    textOverflow: "ellipsis",
-                    pointerEvents: "none"
-                  }
-            );
+            textElement.css({
+              ...staticProps.textCss,
+              width: computedWidth
+            });
 
             // - allign right
             // textElement.attr({x: box.x + box.w - textElement.width - config.row.marginX});
@@ -241,6 +288,7 @@ export default (Highcharts: any) => {
               config.node.padding.y;
           }
           if (node === this._tree.root) {
+            // region resize
             const { width, height } = this.chart.userOptions.chart;
             if (!width || !height) {
               let changed = false;
@@ -270,6 +318,7 @@ export default (Highcharts: any) => {
                 return false;
               }
             }
+            // endregion
           }
 
           // main box
@@ -281,28 +330,16 @@ export default (Highcharts: any) => {
             if (tooltipX + tooltipW > this.chart.chartWidth) {
               tooltipX = box.x - tooltipW;
             }
-            const styleStr = ren.styledMode
-              ? `
+            const styleStr = `
 min-height: ${box.h}px;
 margin-left: -${SHAPE_OFFSET}px;
 margin-top: -${SHAPE_OFFSET}px;
-width: ${tooltipW}px;`
-              : `
-border-radius: ${config.tooltip.borderRadius};
-background-color: ${config.tooltip.backgroundColor};
-color: ${config.tooltip.textColor};
-font-size: 12px;
-min-height: ${box.h}px;
-margin-left: -${SHAPE_OFFSET}px;
-margin-top: -${SHAPE_OFFSET}px;
-width: ${tooltipW}px;
-white-space: initial;
-word-break: break-word;
-`;
+width: ${tooltipW}px;${staticProps.tooltipStr.style}`;
+
             tooltipElement = ren
               .label(
                 `<div
-${ren.styledMode ? 'class="highcharts-tree-node-tooltip-inner"' : ""}
+${staticProps.tooltipStr.class}
 style="${styleStr}">${config.tooltip.tooltipFormatter(node.item)}</div>`,
                 tooltipX,
                 box.y,
@@ -314,17 +351,10 @@ style="${styleStr}">${config.tooltip.tooltipFormatter(node.item)}</div>`,
               .css({
                 pointerEvents: "none"
               })
-              .attr(
-                ren.styledMode
-                  ? {
-                      zIndex: 5,
-                      class: "highcharts-tree-node-tooltip"
-                    }
-                  : {
-                      zIndex: 5,
-                      opacity: 0
-                    }
-              )
+              .attr({
+                ...staticProps.tooltipAttr,
+                zIndex: 5
+              })
               .add();
             elements.push(tooltipElement);
           }
@@ -334,23 +364,19 @@ style="${styleStr}">${config.tooltip.tooltipFormatter(node.item)}</div>`,
             .css({
               cursor: node.children.length < 1 ? "default" : "pointer"
             })
-            .attr(
-              ren.styledMode
+            .attr({
+              ...staticProps.boxAttr,
+              id: node.item.id,
+              ...(ren.styledMode
                 ? {
-                    zIndex: 0,
-                    id: node.item.id,
                     class: `highcharts-tree-box${node.toggle ? "" : " fold"}`
                   }
                 : {
                     fill: node.toggle
                       ? config.node.backgroundColor
-                      : config.node.backgroundColorToggle,
-                    zIndex: 0,
-                    id: node.item.id,
-                    stroke: config.node.border.color, // basic
-                    "stroke-width": config.node.border.width // hyphenated
-                  }
-            )
+                      : config.node.backgroundColorToggle
+                  })
+            })
             .on("mouseover", () => {
               if (ren.styledMode) {
                 if (tooltipElement) {
@@ -430,16 +456,7 @@ style="${styleStr}">${config.tooltip.tooltipFormatter(node.item)}</div>`,
                   box.x + box.w / 2,
                   box.y - config.node.marginY / 2 - config.connector.width / 2
                 ])
-                .attr(
-                  ren.styledMode
-                    ? {
-                        class: "highcharts-tree-connector"
-                      }
-                    : {
-                        "stroke-width": config.connector.width,
-                        stroke: config.connector.color
-                      }
-                )
+                .attr(staticProps.connectorAttr)
             );
           }
 
@@ -460,16 +477,7 @@ style="${styleStr}">${config.tooltip.tooltipFormatter(node.item)}</div>`,
                     nodeBottomMiddle.x,
                     nodeBottomMiddle.y + config.node.marginY / 2
                   ])
-                  .attr(
-                    ren.styledMode
-                      ? {
-                          class: "highcharts-tree-connector"
-                        }
-                      : {
-                          "stroke-width": config.connector.width,
-                          stroke: config.connector.color
-                        }
-                  )
+                  .attr(staticProps.connectorAttr)
               );
 
               // draw line over children
@@ -493,16 +501,7 @@ style="${styleStr}">${config.tooltip.tooltipFormatter(node.item)}</div>`,
                         config.node.border.width / 2,
                       linePositionY
                     ])
-                    .attr(
-                      ren.styledMode
-                        ? {
-                            class: "highcharts-tree-connector"
-                          }
-                        : {
-                            "stroke-width": config.connector.width,
-                            stroke: config.connector.color
-                          }
-                    )
+                    .attr(staticProps.connectorAttr)
                 );
               }
             }
