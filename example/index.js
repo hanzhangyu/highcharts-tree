@@ -19,13 +19,13 @@ async function foo() {
       type: "tree",
       config: {
         node: {
-          textColor: "#454d59",
+          textColor: "#454d59", // ignored by stylemode
           width: 200,
           height: 0, // null || 0 = auto-calculated
           marginX: 20,
           marginY: 20,
-          backgroundColor: "#f2f2f2",
-          backgroundColorToggle: "#cccccc",
+          backgroundColor: "#f2f2f2", // ignored by stylemode
+          backgroundColorToggle: "#cccccc", // ignored by stylemode
           title: {
             marginTop: 4
           },
@@ -42,15 +42,15 @@ async function foo() {
         },
         tooltip: {
           enabled: true,
-          backgroundColor: "rgba(0,0,0,0.6)",
-          borderRadius: "3px",
-          textColor: "#fff",
+          backgroundColor: "rgba(0,0,0,0.6)", // ignored by stylemode
+          borderRadius: "3px", // ignored by stylemode
+          textColor: "#fff", // ignored by stylemode
           tooltipFormatter(item) {
             return `<h3>${item.content.title}</h3>${item.content.data.join("<br>")}`;
           }
         },
         connector: {
-          color: "#bcbcbc",
+          color: "#bcbcbc", // ignored by stylemode
           width: 4
         },
         legend: {
@@ -68,15 +68,10 @@ async function foo() {
     // title: false,
     credits: { enabled: true },
     exporting: { enabled: true },
-    // colors: ["#74D0C5", "#F2AC54", "#ECD868"]
   };
   window.chart = Highcharts.chart("tree", chartConfig);
 
   document.querySelector("#btnRefresh").addEventListener("click", () => {
-    // treeChartData.tree.forEach(function (item) {
-    //     item.content.data[0] = new Date();
-    // });
-    // chartConfig.series[0].data[0] = treeChartData;
     window.chart = Highcharts.chart("tree", chartConfig);
   });
 }

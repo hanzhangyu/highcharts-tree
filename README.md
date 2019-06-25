@@ -24,7 +24,9 @@ npm i --save highcharts-tree
 ```
 
 ## Usage
+
 Follow the three steps:
+
 <!-- prettier-ignore-start -->
 ```javascript
 import Highcharts from "highcharts";
@@ -62,10 +64,35 @@ Highcharts.chart(idSelector, chartConfig);
 ```
 <!-- prettier-ignore-end -->
 
-## config
-```typescript
-import {HighchartsTreeConfig} from "highcharts-tree/types";
+### Styled Mode
+
+> highcharts version >= 7.0.0
+
+```js
+import Highcharts from "highcharts";
+import HighchartsTree from "highcharts-tree";
+import "highcharts-tree/css/highcharts-tree.scss"; // 1. import css file
+
+HighchartsTree(Highcharts);
+
+const chartConfig = {
+  chart: {
+    styledMode: true // 2. use styled mode
+    // ...
+  }
+  // ...
+};
+Highcharts.chart(idSelector, chartConfig);
 ```
+
+more css selector see [highcharts-tree.scss](./css/highcharts-tree.scss)
+
+## config
+
+```typescript
+import { HighchartsTreeConfig } from "highcharts-tree/types";
+```
+
 ```js
 {
   node: {
@@ -127,7 +154,14 @@ import {HighchartsTreeConfig} from "highcharts-tree/types";
   },
 }
 ```
+
+## Demo
+
+- [project example](https://github.com/hanzhangyu/highcharts-tree/tree/master/example)
+- [codesandbox](https://codesandbox.io/s/zen-hooks-dcegq?fontsize=14)
+
 ## Screenshot
+
 ![][screenshot-img]
 
 ## Changelog
