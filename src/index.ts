@@ -193,7 +193,7 @@ word-break: break-word;`,
 
           /**
            * in this line, highcharts will get the computed style
-           * so add it to DOM first to create CSSOM
+           * so add it to RenderObject first
            * @link
            * https://github.com/highcharts/highcharts/blob/master/ts/parts/SvgRenderer.ts#L3716
            */
