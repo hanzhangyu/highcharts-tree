@@ -40,8 +40,7 @@ export default (Highcharts: any) => {
         width: 3,
         color: "#919191"
       },
-      // @ts-ignore: Unused parameter index
-      dataFormatter(data: string | number, index: number) {
+      dataFormatter(data: string | number) {
         return data.toLocaleString();
       }
     },
@@ -56,7 +55,9 @@ export default (Highcharts: any) => {
       textColor: "#fff",
       width: 0, // set 0 to use node width
       tooltipFormatter(item: TreeNodeData) {
-        return `${item.content.title}<br>${item.content.data.join("<br>")}`;
+        return `${item.content.title}` + item.content.data
+          ? `<br>${item.content.data.join("<br>")}`
+          : "";
       }
     },
     connector: {
@@ -129,7 +130,6 @@ export default (Highcharts: any) => {
                 fontSize: "14px",
                 color: config.node.textColor,
                 fontWeight: "bold",
-                textOverflow: "ellipsis",
                 textAlign: "center"
               },
               textCss: {
@@ -199,7 +199,8 @@ word-break: break-word;`,
            */
           titleElement.css({
             ...staticProps.titleCss,
-            width: box.w - NODE_WIDTH_OFFSET - config.node.padding.x * 2
+            width: box.w - NODE_WIDTH_OFFSET - config.node.padding.x * 2,
+            textOverflow: "ellipsis"
           });
           // - center it
           titleElement.attr({ x: box.x + box.w / 2 - titleElement.width / 2 });
@@ -213,68 +214,70 @@ word-break: break-word;`,
             titleElement.height +
             config.node.title.marginTop +
             config.node.title.marginDown;
-          for (let i = 0; i < node.item.content.data.length; i++) {
-            if (config.legend.enabled) {
-              // legend box
-              elements.push(
-                ren
-                  .rect(
-                    box.x + config.node.padding.x,
-                    box.y + rowsY + config.row.height * i,
-                    config.legend.nodeWidth,
-                    config.row.height
-                  )
-                  .css({ pointerEvents: "none" })
-                  .attr(
-                    ren.styledMode
-                      ? { class: `highcharts-tree-legend-${i}`, zIndex: 1 }
-                      : { fill: colors[i], zIndex: 1 }
-                  )
+          if (node.item.content.data) {
+            for (let i = 0; i < node.item.content.data.length; i++) {
+              if (config.legend.enabled) {
+                // legend box
+                elements.push(
+                  ren
+                    .rect(
+                      box.x + config.node.padding.x,
+                      box.y + rowsY + config.row.height * i,
+                      config.legend.nodeWidth,
+                      config.row.height
+                    )
+                    .css({ pointerEvents: "none" })
+                    .attr(
+                      ren.styledMode
+                        ? { class: `highcharts-tree-legend-${i}`, zIndex: 1 }
+                        : { fill: colors[i], zIndex: 1 }
+                    )
+                );
+              }
+
+              const text = config.node.dataFormatter(
+                node.item.content.data[i],
+                i
               );
-            }
-
-            const text = config.node.dataFormatter(
-              node.item.content.data[i],
-              i
-            );
-            const textAlign = config.node.content.align;
-            const textElementWidth =
-              box.w -
-              offsetTextByLegend -
-              NODE_WIDTH_OFFSET -
-              config.node.padding.x * 2;
-            const computedWidth =
-              textAlign === "center" ? undefined : textElementWidth;
-            const textElement = ren
-              .label(
-                text,
-                box.x + offsetTextByLegend + config.node.padding.x,
-                box.y + rowsY + config.row.height * i,
-                "rect",
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                "tree-node-data"
-              )
-              .attr({
-                zIndex: 1,
+              const textAlign = config.node.content.align;
+              const textElementWidth =
+                box.w -
+                offsetTextByLegend -
+                NODE_WIDTH_OFFSET -
+                config.node.padding.x * 2;
+              const computedWidth =
+                textAlign === "center" ? undefined : textElementWidth;
+              const textElement = ren
+                .label(
+                  text,
+                  box.x + offsetTextByLegend + config.node.padding.x,
+                  box.y + rowsY + config.row.height * i,
+                  "rect",
+                  undefined,
+                  undefined,
+                  undefined,
+                  undefined,
+                  "tree-node-data"
+                )
+                .attr({
+                  zIndex: 1,
+                  width: computedWidth
+                })
+                .add();
+              textElement.css({
+                ...staticProps.textCss,
                 width: computedWidth
-              })
-              .add();
-            textElement.css({
-              ...staticProps.textCss,
-              width: computedWidth
-            });
-
-            // - allign right
-            // textElement.attr({x: box.x + box.w - textElement.width - config.row.marginX});
-            if (textAlign === "center") {
-              textElement.attr({
-                x: box.x + box.w / 2 - textElement.width / 2
               });
+
+              // - allign right
+              // textElement.attr({x: box.x + box.w - textElement.width - config.row.marginX});
+              if (textAlign === "center") {
+                textElement.attr({
+                  x: box.x + box.w / 2 - textElement.width / 2
+                });
+              }
+              elements.push(textElement);
             }
-            elements.push(textElement);
           }
 
           // calculate node height(if not set) based on rendered content

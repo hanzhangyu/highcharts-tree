@@ -1,6 +1,6 @@
 export default {
   id: 1,
-  content: { title: "title 1", data: ["data", "text"] },
+  content: { title: "title 1 long long long long long long long" },
   children: [
     {
       id: 2,

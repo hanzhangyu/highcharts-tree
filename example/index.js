@@ -46,7 +46,7 @@ async function foo() {
           borderRadius: "3px", // ignored by stylemode
           textColor: "#fff", // ignored by stylemode
           tooltipFormatter(item) {
-            return `<h3>${item.content.title}</h3>${item.content.data.join("<br>")}`;
+            return `<h3>${item.content.title}</h3>${item.content.data && item.content.data.join("<br>")}`;
           }
         },
         connector: {
