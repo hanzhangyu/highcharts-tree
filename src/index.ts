@@ -55,9 +55,10 @@ export default (Highcharts: any) => {
       textColor: "#fff",
       width: 0, // set 0 to use node width
       tooltipFormatter(item: TreeNodeData) {
-        return `${item.content.title}` + item.content.data
-          ? `<br>${item.content.data.join("<br>")}`
-          : "";
+        return (
+          `${item.content.title}` +
+          (item.content.data ? `<br>${item.content.data.join("<br>")}` : "")
+        );
       }
     },
     connector: {
