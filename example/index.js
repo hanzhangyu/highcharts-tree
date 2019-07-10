@@ -72,7 +72,8 @@ async function foo() {
   window.chart = Highcharts.chart("tree", chartConfig);
 
   document.querySelector("#btnRefresh").addEventListener("click", () => {
-    window.chart = Highcharts.chart("tree", chartConfig);
+    chartConfig.chart.config.node.width = 300;
+    window.chart.redraw();
   });
 }
 document.addEventListener("DOMContentLoaded", foo);
