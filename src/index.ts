@@ -82,6 +82,18 @@ export default (Highcharts: any) => {
     },
     {
       init() {
+        Highcharts.addEvent(Highcharts.Chart, "redraw", (e: Event) => {
+          const chart = e.target;
+          if (chart !== this.chart) return;
+          this._tree.build();
+          this.translate();
+        });
+        Highcharts.addEvent(Highcharts.Chart, "destroy", (e: Event) => {
+          const chart = e.target;
+          if (chart !== this.chart) return;
+          Highcharts.removeEvent(chart, "redraw");
+          Highcharts.removeEvent(chart, "destroy");
+        });
         seriesTypes.pie.prototype.init.apply(this, arguments);
         const { data } = this.options;
         if (

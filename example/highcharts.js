@@ -6,4 +6,6 @@ import "../css/highcharts-tree.scss";
 HighchartsExport(Highcharts);
 HighchartsTree(Highcharts);
 
+window.Highcharts = Highcharts;
+
 export {Highcharts};
