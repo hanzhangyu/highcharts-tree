@@ -1,6 +1,6 @@
 import { TreeNodeData, HighchartsTreeConfig } from "../types";
-import TreeNode from "./TreeNode";
-import Tree from "./Tree";
+import TreeNode from "./core/TreeNode";
+import Tree from "./core/Tree";
 
 interface ElementObjectExtended extends Highcharts.ElementObject {
   added: boolean;

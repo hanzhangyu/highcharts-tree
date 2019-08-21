@@ -1,4 +1,4 @@
-import { TreeNodeData } from "../types";
+import {TreeNodeData} from "../../types";
 import TreeNode from "./TreeNode";
 import Dictionary from "./Dictionary";
 

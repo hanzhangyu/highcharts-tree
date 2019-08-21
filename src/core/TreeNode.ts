@@ -1,4 +1,4 @@
-import {TreeNodeData} from "../types";
+import {TreeNodeData} from "../../types";
 export default class TreeNode<T extends TreeNodeData> {
   public children: Array<TreeNode<T>>;
 
