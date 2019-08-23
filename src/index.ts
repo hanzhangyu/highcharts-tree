@@ -321,7 +321,6 @@ word-break: break-word;`,
           if (node === this._tree.root) {
             // region resize
             const { width, height } = this.chart.userOptions.chart;
-            console.log(width, height)
             if (!width || !height) {
               let changed = false;
               const curWidth =
