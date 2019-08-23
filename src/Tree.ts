@@ -1,10 +1,24 @@
-import {TreeNodeData} from "../types";
+import { TreeNodeData } from "../types";
 import TreeNode from "./TreeNode";
 import Dictionary from "./Dictionary";
 
 export default class Tree<T extends TreeNodeData> {
-  public static getTree<T extends TreeNodeData>(tree?: Tree<T>, data?: T) {
-    return tree && tree.root ? tree : new Tree(data).build();
+  public static getTree<T extends TreeNodeData>({
+    tree,
+    data,
+    horizontal
+  }: {
+    tree?: Tree<T>;
+    data?: T;
+    horizontal?: boolean;
+  }) {
+    return tree && tree.root ? tree : new Tree(data, horizontal).build();
+  }
+
+  public static rotate<T extends TreeNodeData>(node: TreeNode<T>) {
+    [node.x, node.y] = [node.y, node.x];
+    [node.width, node.height] = [node.height, node.width];
+    if (node.children) node.children.forEach(Tree.rotate);
   }
 
   private static nodeSize = 1;
@@ -131,7 +145,7 @@ export default class Tree<T extends TreeNodeData> {
 
   private treeMod = 0;
 
-  constructor(treeNode: T) {
+  constructor(treeNode: T, public horizontal: boolean = true) {
     this.root = this.buildTree(treeNode);
   }
 
@@ -140,7 +154,7 @@ export default class Tree<T extends TreeNodeData> {
     this.calculateInitialX(this.root);
     this.calculateXWithMod(this.root);
     this.calculateFinalPositions(this.root);
-
+    if (!this.horizontal) Tree.rotate(this.root);
     return this;
   }
 

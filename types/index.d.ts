@@ -11,6 +11,7 @@ export interface TreeNodeData {
 }
 
 export interface HighchartsTreeConfig {
+    horizontal?: boolean;
     node?: {
         width?: number;
         height?: number;

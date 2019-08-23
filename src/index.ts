@@ -13,6 +13,7 @@ const NODE_WIDTH_OFFSET = SHAPE_OFFSET * 2;
 export default (Highcharts: any) => {
   const highchartMajorVersion = Highcharts.version.split(".")[0];
   const defaultConfig: HighchartsTreeConfig = {
+    horizontal: true,
     node: {
       width: 200,
       height: 0, // null || 0 = auto-calculated
@@ -86,6 +87,11 @@ export default (Highcharts: any) => {
         Highcharts.addEvent(Highcharts.Chart, "redraw", (e: Event) => {
           const chart = e.target;
           if (chart !== this.chart) return;
+          // ignore setSize
+          if (this._skipTranslate) {
+            this._skipTranslate = false;
+            return;
+          }
           this._tree.build();
           this.translate();
         });
@@ -105,17 +111,22 @@ export default (Highcharts: any) => {
         ) {
           return;
         }
-        this._tree = Tree.getTree(this._tree, this.options.data.tree);
-      },
-      translate() {
         this._config = merge(
           {},
           this.options.config,
           this.chart.userOptions.chart.config
         );
+        this._tree = Tree.getTree({
+          tree: this._tree,
+          data: this.options.data.tree,
+          horizontal: this._config.horizontal
+        });
+      },
+      translate() {
         const data = this.options.data;
         const ren = this.chart.renderer;
-        const config = this._config;
+        const config: HighchartsTreeConfig = this._config;
+        config.node.height = config.node.height || this._treeComputedNodeHeight;
         const colors = this.chart.options.colors;
         let maxX = 0;
         let maxY = 0;
@@ -294,6 +305,7 @@ word-break: break-word;`,
           }
 
           // calculate node height(if not set) based on rendered content
+          let needRedraw = false;
           if (
             typeof config.node.height === "undefined" ||
             config.node.height === null ||
@@ -303,10 +315,13 @@ word-break: break-word;`,
               rowsY +
               config.row.line * config.row.height +
               config.node.padding.y;
+            this._treeComputedNodeHeight = config.node.height;
+            needRedraw = true;
           }
           if (node === this._tree.root) {
             // region resize
             const { width, height } = this.chart.userOptions.chart;
+            console.log(width, height)
             if (!width || !height) {
               let changed = false;
               const curWidth =
@@ -330,12 +345,18 @@ word-break: break-word;`,
                 this.chart.renderTo.style.height = `${curHeight}px`;
               }
               if (changed) {
+                needRedraw = false;
                 this._elements = elements;
+                this._skipTranslate = true; // setSize will trigger redraw event
                 this.chart.setSize(curWidth, curHeight, false);
                 return false;
               }
             }
             // endregion
+          }
+          if (needRedraw) {
+            this.translate();
+            return false;
           }
 
           // main box
@@ -461,70 +482,136 @@ style="${styleStr}">${config.tooltip.tooltipFormatter(node.item)}</div>`,
             });
           }
 
+          // region draw connector line
           // draw line to parent
           if (node.parent != null) {
-            elements.push(
-              ren
-                .path([
-                  "M",
-                  box.x + box.w / 2,
-                  box.y,
-                  "L",
-                  box.x + box.w / 2,
-                  box.y - config.node.marginY / 2 - config.connector.width / 2
-                ])
-                .attr(staticProps.connectorAttr)
-            );
+            if (config.horizontal) {
+              elements.push(
+                ren
+                  .path([
+                    "M",
+                    box.x + box.w / 2,
+                    box.y,
+                    "L",
+                    box.x + box.w / 2,
+                    box.y - config.node.marginY / 2 - config.connector.width / 2
+                  ])
+                  .attr(staticProps.connectorAttr)
+              );
+            } else {
+              elements.push(
+                ren
+                  .path([
+                    "M",
+                    box.x,
+                    box.y + box.h / 2,
+                    "L",
+                    box.x -
+                      config.node.marginX / 2 -
+                      config.connector.width / 2,
+                    box.y + box.h / 2
+                  ])
+                  .attr(staticProps.connectorAttr)
+              );
+            }
           }
 
           if (node.toggle) {
             // draw line to children
             if (node.children.length > 0) {
-              const nodeBottomMiddle = {
-                x: box.x + box.w / 2,
-                y: box.y + box.h
-              };
-              elements.push(
-                ren
-                  .path([
-                    "M",
-                    nodeBottomMiddle.x,
-                    nodeBottomMiddle.y,
-                    "L",
-                    nodeBottomMiddle.x,
-                    nodeBottomMiddle.y + config.node.marginY / 2
-                  ])
-                  .attr(staticProps.connectorAttr)
-              );
-
-              // draw line over children
-              if (node.children.length > 1) {
-                const offsetX = config.node.width + config.node.marginX;
-                const linePositionY =
-                  nodeBottomMiddle.y + config.node.marginY / 2;
+              if (config.horizontal) {
+                const nodeBottomMiddle = {
+                  x: box.x + box.w / 2,
+                  y: box.y + box.h
+                };
                 elements.push(
                   ren
                     .path([
                       "M",
-                      node.getRightMostChild().x * offsetX +
-                        config.node.width / 2 -
-                        config.connector.width / 2 +
-                        config.node.border.width / 2,
-                      linePositionY,
+                      nodeBottomMiddle.x,
+                      nodeBottomMiddle.y,
                       "L",
-                      node.getLeftMostChild().x * offsetX +
-                        config.node.width / 2 +
-                        config.connector.width / 2 +
-                        config.node.border.width / 2,
-                      linePositionY
+                      nodeBottomMiddle.x,
+                      nodeBottomMiddle.y + config.node.marginY / 2
                     ])
                     .attr(staticProps.connectorAttr)
                 );
+
+                // draw line over children
+                if (node.children.length > 1) {
+                  const offsetX = config.node.width + config.node.marginX;
+                  const linePositionY =
+                    nodeBottomMiddle.y + config.node.marginY / 2;
+                  elements.push(
+                    ren
+                      .path([
+                        "M",
+                        node.getRightMostChild().x * offsetX +
+                          config.node.width / 2 -
+                          config.connector.width / 2 +
+                          config.node.border.width / 2,
+                        linePositionY,
+                        "L",
+                        node.getLeftMostChild().x * offsetX +
+                          config.node.width / 2 +
+                          config.connector.width / 2 +
+                          config.node.border.width / 2,
+                        linePositionY
+                      ])
+                      .attr(staticProps.connectorAttr)
+                  );
+                }
+              } else {
+                const nodeRightMiddle = {
+                  x: box.x + box.w,
+                  y: box.y + box.h / 2
+                };
+                elements.push(
+                  ren
+                    .path([
+                      "M",
+                      nodeRightMiddle.x,
+                      nodeRightMiddle.y,
+                      "L",
+                      nodeRightMiddle.x + config.node.marginX / 2,
+                      nodeRightMiddle.y
+                    ])
+                    .attr(staticProps.connectorAttr)
+                );
+
+                // draw line over children
+                if (node.children.length > 1) {
+                  const offsetY = config.node.height + config.node.marginY;
+                  const linePositionX =
+                    nodeRightMiddle.x + config.node.marginX / 2;
+                  // bottom to top
+                  elements.push(
+                    ren
+                      .path([
+                        "M",
+                        linePositionX,
+                        node.getRightMostChild().y * offsetY +
+                          config.node.height / 2 -
+                          config.connector.width / 2 +
+                          config.node.border.width / 2 +
+                          this._titleOffsetY,
+                        "L",
+                        linePositionX,
+                        node.getLeftMostChild().y * offsetY +
+                          config.node.height / 2 -
+                          config.connector.width / 2 +
+                          config.node.border.width / 2 +
+                          this._titleOffsetY
+                      ])
+                      .attr(staticProps.connectorAttr)
+                  );
+                }
               }
             }
 
             each(node.children, drawNode);
           }
+          // endregion
 
           maxX = Math.max(maxX, box.x + box.w);
           maxY = Math.max(maxY, box.y + box.h);
@@ -533,11 +620,10 @@ style="${styleStr}">${config.tooltip.tooltipFormatter(node.item)}</div>`,
         };
 
         // clear the previous
-        // debugger;
         each(elements, (element: ElementObjectExtended) => {
           element.destroy();
         });
-        elements = [];
+        this._elements = elements = [];
 
         if (
           data === null ||

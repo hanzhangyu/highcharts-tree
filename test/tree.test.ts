@@ -1,4 +1,4 @@
-import {TreeNodeData} from "../types";
+import { TreeNodeData } from "../types";
 import anyTest, { TestInterface } from "ava";
 import { dataForShift, dataForShiftOvermuch } from "./helper/data";
 import Tree from "../src/Tree";
@@ -26,15 +26,15 @@ test.before(t => {
 });
 
 test(`${NAMESPACE}test for getTree`, t => {
-  const instantiatedTree = Tree.getTree(t.context.tree);
+  const instantiatedTree = Tree.getTree({ tree: t.context.tree });
   t.is(instantiatedTree, t.context.tree);
-  const newTree = Tree.getTree(null, dataForShift);
+  const newTree = Tree.getTree({ data: dataForShift });
   t.not(newTree, instantiatedTree as any);
   t.deepEqual(newTree, instantiatedTree as any);
 });
 
 test(`${NAMESPACE}test for fix shift`, t => {
-  const newTree = Tree.getTree(null, dataForShiftOvermuch);
+  const newTree = Tree.getTree({ data: dataForShiftOvermuch });
   t.is(newTree.root.children[1].children[0].x, 0);
 });
 
@@ -50,6 +50,22 @@ test(`${NAMESPACE}test for node move`, t => {
     }
   };
   loop(t.context.tree.root);
+});
+
+test(`${NAMESPACE}test for node direction`, t => {
+  const tree = new Tree(dataForShift, false);
+  const loop = (node: TreeNode<TreeNodeDataWithResult>) => {
+    t.is(node.x, node.item.result.y);
+    t.is(node.y, node.item.result.x);
+    // t.is(node.width, node.item.result.height);
+    if (node.children) {
+      node.children.forEach((child: TreeNode<TreeNodeDataWithResult>) =>
+        loop(child)
+      );
+    }
+  };
+  tree.build();
+  loop(tree.root);
 });
 
 test(`${NAMESPACE}test for toggle`, t => {

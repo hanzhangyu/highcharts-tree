@@ -18,6 +18,7 @@ async function foo() {
       styledMode: true,
       type: "tree",
       config: {
+        horizontal: false,
         node: {
           textColor: "#454d59", // ignored by stylemode
           width: 200,
