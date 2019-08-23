@@ -89,76 +89,22 @@ more css selector see [highcharts-tree.scss](./css/highcharts-tree.scss)
 
 ## config
 
+[HighchartsTreeConfig](./types/index.d.ts)
+
+### Type Checking
 ```typescript
 import { HighchartsTreeConfig } from "highcharts-tree/types";
-```
-
-```js
-{
-  node: {
-    width: 200, // node width
-    height: 0, // null || 0 = auto-calculated
-    marginX: 20, // node margin left and right
-    marginY: 20, // node margin top and bottom
-    textColor: "#454d59", // color for title and content word in node
-    backgroundColor: "#f2f2f2", // background-color for node
-    backgroundColorToggle: "#cccccc", // background-color for node when toggled
-    title: {
-      marginTop: 4, // margin-top for title
-      marginDown: 4, // margin-bottom for title
-    },
-    padding: {
-      x: 1.5, // padding left and right for node
-      y: 1.5, // padding top and bottom for node
-    },
-    content: {
-      align: "left", // text-align for content(left|center|right)
-    },
-    hover: { // node background-color when hovered
-      backgroundColor: "#d6d6d6",
-      backgroundColorToggle: "#cccccc",
-    },
-    border: { // border style
-      width: 3,
-      color: "#919191"
-    },
-    // format content data
-    dataFormatter(date: string | number, index: number) {
-      return date.toLocaleString();
-    }
-  },
-  row: {
-    height: 20, // content data height for one row
-    line: 2, // row number, if content.data.length, show content.data.slice(0, line) only
-  },
-  tooltip: {
-    enabled: false, // enable tooltip or not
-    backgroundColor: "rgba(0,0,0,0.6)", // background-color
-    borderRadius: "3px", // border-radius
-    textColor: "#fff", // color
-    width: 0, // tooltip width, set 0 to use node width
-    // format tooltip content
-    tooltipFormatter(item: TreeNodeData) {
-      return `${item.content.title}<br>${item.content.data.join("<br>")}`;
-    }
-  },
-  connector: { // the connector between nodes
-    color: "#bcbcbc",
-    width: 4,
-  },
-  legend: {
-    enabled: true,
-    nodeWidth: 20, // width for legend in node content row
-    marginX: 10, // margin between legend
-    marginY: 25,
-  },
-}
+const chartConfig: HighchartsTreeConfig = {/* ... */};
+Highcharts.chart(idSelector, chartConfig);
 ```
 
 ## Demo
 
 - [project example](https://github.com/hanzhangyu/highcharts-tree/tree/master/example)
-- [codesandbox](https://codesandbox.io/s/zen-hooks-dcegq?fontsize=14)
+- [codesandbox base](https://codesandbox.io/s/highcharts-tree-demo-dcegq?fontsize=14)
+- [codesandbox simple](https://codesandbox.io/s/highcharts-tree-simple-zg23i?fontsize=14)
+- [codesandbox stylemode](https://codesandbox.io/s/highcharts-tree-stylemode-7x1ou?fontsize=14)
+
 
 ## Screenshot
 
