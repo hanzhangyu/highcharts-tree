@@ -104,6 +104,7 @@ Highcharts.chart(idSelector, chartConfig);
 - [codesandbox base](https://codesandbox.io/s/highcharts-tree-demo-dcegq?fontsize=14)
 - [codesandbox simple](https://codesandbox.io/s/highcharts-tree-simple-zg23i?fontsize=14)
 - [codesandbox stylemode](https://codesandbox.io/s/highcharts-tree-stylemode-7x1ou?fontsize=14)
+- [codesandbox vertical](https://codesandbox.io/s/highcharts-tree-vertical-xmvib?fontsize=14)
 
 
 ## Screenshot
