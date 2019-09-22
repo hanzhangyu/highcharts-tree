@@ -14,6 +14,7 @@ export default (Highcharts: any) => {
   const highchartMajorVersion = Highcharts.version.split(".")[0];
   const defaultConfig: HighchartsTreeConfig = {
     horizontal: true,
+    disableToggle: false,
     node: {
       width: 200,
       height: 0, // null || 0 = auto-calculated
@@ -473,7 +474,7 @@ style="${styleStr}">${config.tooltip.tooltipFormatter(node.item)}</div>`,
               }
             });
           elements.push(boxElement);
-          if (node.children.length > 0) {
+          if (node.children.length > 0 && !config.disableToggle) {
             boxElement.on("click", () => {
               node.toggle = !node.toggle;
               this._tree.build();

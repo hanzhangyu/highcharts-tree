@@ -11,7 +11,8 @@ export interface TreeNodeData {
 }
 
 export interface HighchartsTreeConfig {
-    horizontal?: boolean;
+    horizontal?: boolean; // draw direction
+    disableToggle?: boolean; // disable toggle node children
     node?: {
         width?: number; // node width
         height?: number; // null || 0 = auto-calculated
