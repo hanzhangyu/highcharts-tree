@@ -127,7 +127,8 @@ export default (Highcharts: any) => {
         const data = this.options.data;
         const ren = this.chart.renderer;
         const config: HighchartsTreeConfig = this._config;
-        config.node.height = config.node.height || this._treeComputedNodeHeight;
+        // 0 is false, and _treeComputedNodeHeight is undefined initial
+        config.node.height = config.node.height || this._treeComputedNodeHeight || 0;
         const colors = this.chart.options.colors;
         let maxX = 0;
         let maxY = 0;
